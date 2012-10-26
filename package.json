@@ -1,0 +1,26 @@
+{
+  "name": "dissolve",
+  "version": "0.0.0",
+  "description": "Parse and consume binary streams with a neat DSL",
+  "main": "index.js",
+  "dependencies": {
+    "steez": "~0.4.2"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/deoxxa/dissolve.git"
+  },
+  "keywords": [
+    "dissolve",
+    "parse",
+    "parser",
+    "binary",
+    "data",
+    "stream",
+    "event",
+    "emit"
+  ],
+  "author": "Conrad Pankoff <deoxxa@fknsrs.biz> (http://www.fknsrs.biz/)",
+  "license": "BSD"
+}
