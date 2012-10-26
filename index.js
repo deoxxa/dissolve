@@ -32,9 +32,12 @@ Parser.prototype.write = function write(data) {
     var job = this.jobs[0];
 
     if (job.type === "tap") {
-      job.fn.apply(this);
-
       this.jobs.shift();
+
+      var jobs = this.jobs.slice();
+      this.jobs.splice(0);
+      job.fn.apply(this);
+      Array.prototype.splice.apply(this.jobs, [this.jobs.length, 0].concat(jobs));
 
       continue;
     }
@@ -45,7 +48,10 @@ Parser.prototype.write = function write(data) {
         continue;
       }
 
+      var jobs = this.jobs.slice();
+      this.jobs.splice(0);
       job.fn.apply(this, [function() { job.finished = true; }]);
+      Array.prototype.splice.apply(this.jobs, [this.jobs.length, 0].concat(jobs));
 
       continue;
     }
