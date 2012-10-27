@@ -83,7 +83,8 @@ Tap
 This method allows you to "tap" into the parser at an arbitrary point. The
 callback will be called bound to the parser instance, so you can use parser
 methods on `this`. Any additional parser steps you introduce inside the callback
-will be executed before the steps chained on the `tap` return value.
+will be executed before any existing steps that are already scheduled to run
+after the `tap` call.
 
 Loop
 ----
