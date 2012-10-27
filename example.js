@@ -1,15 +1,53 @@
 #!/usr/bin/env node
 
-var Parser = require("./index");
+var Dissolve = require("./index"),
+    util = require("util");
 
-var parser = Parser().loop(function(end) {
+function Parser() {
+  Dissolve.call(this);
+}
+util.inherits(Parser, Dissolve);
+
+Parser.prototype.mcstring16 = function string16(name) {
+  var len = [name, "len"].join("_");
+
+  return this.uint16be(len).tap(function() {
+    this.buffer(name, this.vars[len] * 2).tap(function() {
+      delete this.vars[len];
+
+      for (var i=0;i<this.vars[name].length/2;++i) {
+        var t = this.vars[name][i*2];
+        this.vars[name][i*2] = this.vars[name][i*2+1];
+        this.vars[name][i*2+1] = t;
+      }
+
+      this.vars[name] = this.vars[name].toString("ucs2");
+    });
+  });
+};
+
+Parser.prototype.packet_0x00 = function packet_0x00() {
+  return this.uint32be("token");
+};
+
+Parser.prototype.packet_0x01 = function packet_0x01() {
+  return this.uint32be("eid").mcstring16("level_type").uint8("game_mode").uint8("dimension").uint8("difficulty").uint8("junk").uint8("max_players");
+};
+
+Parser.prototype.packet_0x02 = function packet_0x02() {
+  return this.uint8("protocol_version").mcstring16("username").mcstring16("server_host").uint32be("server_port");
+};
+
+var parser = new Parser();
+
+parser.loop(function(end) {
   this.uint8("pid").tap(function() {
     switch (this.vars.pid) {
-      case 0x00: this.uint32be("eid"); break;
-      case 0x01: this.uint16be("a").uint16be("b").uint16be("c"); break;
-      case 0x02: this.uint16be("dlen").buffer("d", "dlen"); break;
+      case 0x00: this.packet_0x00(); break;
+      case 0x01: this.packet_0x01(); break;
+      case 0x02: this.packet_0x02(); break;
     }
-  }).uint16be("csum").tap(function() {
+  }).tap(function() {
     this.emit("data", this.vars);
     this.vars = {};
   });
@@ -19,6 +57,5 @@ parser.on("data", function(e) {
   console.log(e);
 });
 
-parser.write(new Buffer([0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x02]));
-parser.write(new Buffer([0x01, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x02]));
-parser.write(new Buffer([0x02, 0x00, 0x05, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x03]));
+parser.write(new Buffer([0x00, 0x00, 0x00, 0x00, 0x01]));
+parser.write(new Buffer([0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x02, 0x00, 0x61, 0x00, 0x62, 0x00, 0x00, 0x00, 0x00, 0x00]));
