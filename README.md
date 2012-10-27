@@ -37,7 +37,8 @@ Or via git:
 Usage
 -----
 
-Also see [example.js](https://github.com/deoxxa/dissolve/blob/master/example.js).
+Also see [example.js](https://github.com/deoxxa/dissolve/blob/master/example.js)
+and [complex-example.js](https://github.com/deoxxa/dissolve/blob/master/complex-example.js).
 
 ```javascript
 #!/usr/bin/env node
