@@ -86,20 +86,24 @@ Dissolve.prototype.write = function write(data) {
       continue;
     }
 
-    if (job.type.match(/^[u]int(8|16|32)(le|be)?$/)) {
+    if (job.type.match(/^u?int(8|16|32|64)(le|be)?$/)) {
       switch (job.type) {
-        case "int8le": { this.vars[job.name] = this._buffer.readInt8(offset); break; }
+        case "int8le":  { this.vars[job.name] = this._buffer.readInt8(offset);  break; }
         case "uint8le": { this.vars[job.name] = this._buffer.readUInt8(offset); break; }
-        case "int8be": { this.vars[job.name] = this._buffer.readInt8(offset); break; }
+        case "int8be":  { this.vars[job.name] = this._buffer.readInt8(offset);  break; }
         case "uint8be": { this.vars[job.name] = this._buffer.readUInt8(offset); break; }
-        case "int16le": { this.vars[job.name] = this._buffer.readInt16LE(offset); break; }
+        case "int16le":  { this.vars[job.name] = this._buffer.readInt16LE(offset);  break; }
         case "uint16le": { this.vars[job.name] = this._buffer.readUInt16LE(offset); break; }
-        case "int16be": { this.vars[job.name] = this._buffer.readInt16BE(offset); break; }
+        case "int16be":  { this.vars[job.name] = this._buffer.readInt16BE(offset);  break; }
         case "uint16be": { this.vars[job.name] = this._buffer.readUInt16BE(offset); break; }
-        case "int32le": { this.vars[job.name] = this._buffer.readInt32LE(offset); break; }
+        case "int32le":  { this.vars[job.name] = this._buffer.readInt32LE(offset);  break; }
         case "uint32le": { this.vars[job.name] = this._buffer.readUInt32LE(offset); break; }
-        case "int32be": { this.vars[job.name] = this._buffer.readInt32BE(offset); break; }
+        case "int32be":  { this.vars[job.name] = this._buffer.readInt32BE(offset);  break; }
         case "uint32be": { this.vars[job.name] = this._buffer.readUInt32BE(offset); break; }
+        case "int64le":  { this.vars[job.name] = (Math.pow(2, 32) * this._buffer.readInt32LE(offset + 4)) + ((this._buffer[offset + 4] & 0x80 === 0x80 ? 1 : -1) * this._buffer.readUInt32LE(offset)); break; }
+        case "uint64le": { this.vars[job.name] = (Math.pow(2, 32) * this._buffer.readUInt32LE(offset + 4)) + this._buffer.readUInt32LE(offset); break; }
+        case "int64be":  { this.vars[job.name] = (Math.pow(2, 32) * this._buffer.readInt32BE(offset)) + ((this._buffer[offset] & 0x80 === 0x80 ? 1 : -1) * this._buffer.readUInt32BE(offset + 4)); break; }
+        case "uint64be": { this.vars[job.name] = (Math.pow(2, 32) * this._buffer.readUInt32BE(offset)) + this._buffer.readUInt32BE(offset + 4); break; }
       }
 
       this.jobs.shift();
@@ -121,7 +125,7 @@ Dissolve.prototype.write = function write(data) {
   return !this.paused && this.writable;
 };
 
-[8, 16, 32].forEach(function(e) {
+[8, 16, 32, 64].forEach(function(e) {
   ["", "u"].forEach(function(s) {
     Dissolve.prototype[s + "int" + e] = Dissolve.prototype[s + "int" + e + "le"] = function(name) {
       this.jobs.push({
