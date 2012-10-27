@@ -8,8 +8,8 @@ function copy(o) {
   }, {});
 }
 
-var Parser = module.exports = function Parser() {
-  if (!(this instanceof Parser)) { return new Parser(); }
+var Dissolve = module.exports = function Dissolve() {
+  if (!(this instanceof Dissolve)) { return new Dissolve(); }
 
   Steez.call(this);
 
@@ -18,9 +18,9 @@ var Parser = module.exports = function Parser() {
 
   this._buffer = new Buffer(0);
 };
-util.inherits(Parser, Steez);
+util.inherits(Dissolve, Steez);
 
-Parser.prototype.write = function write(data) {
+Dissolve.prototype.write = function write(data) {
   var offset = 0;
 
   var tmp = new Buffer(this._buffer.length + data.length);
@@ -123,7 +123,7 @@ Parser.prototype.write = function write(data) {
 
 [8, 16, 32].forEach(function(e) {
   ["", "u"].forEach(function(s) {
-    Parser.prototype[s + "int" + e] = Parser.prototype[s + "int" + e + "le"] = function(name) {
+    Dissolve.prototype[s + "int" + e] = Dissolve.prototype[s + "int" + e + "le"] = function(name) {
       this.jobs.push({
         type: s + "int" + e + "le",
         length: e / 8,
@@ -133,7 +133,7 @@ Parser.prototype.write = function write(data) {
       return this;
     };
 
-    Parser.prototype[s + "int" + e + "be"] = function(name) {
+    Dissolve.prototype[s + "int" + e + "be"] = function(name) {
       this.jobs.push({
         type: s + "int" + e + "be",
         length: e / 8,
@@ -146,7 +146,7 @@ Parser.prototype.write = function write(data) {
 });
 
 ["tap", "loop"].forEach(function(e) {
-  Parser.prototype[e] = function(name, fn) {
+  Dissolve.prototype[e] = function(name, fn) {
     if (typeof name === "function") {
       fn = name;
       name = null;
@@ -163,7 +163,7 @@ Parser.prototype.write = function write(data) {
 });
 
 ["buffer", "string"].forEach(function(e) {
-  Parser.prototype[e] = function(name, length) {
+  Dissolve.prototype[e] = function(name, length) {
     this.jobs.push({
       type: e,
       name: name,
