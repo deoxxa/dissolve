@@ -9,11 +9,11 @@ function Parser() {
   this.loop(function(end) {
     this.uint8("pid").tap(function() {
       switch (this.vars.pid) {
-        case 0x00: this.packet_0x00(); break;
-        case 0x01: this.packet_0x01(); break;
-        case 0x02: this.packet_0x02(); break;
-        case 0x03: this.packet_0x03(); break;
-        case 0x04: this.packet_0x04(); break;
+        case 0x00: this.uint32be("token"); break;
+        case 0x01: this.uint32be("eid").mcstring16("level_type").uint8("game_mode").uint8("dimension").uint8("difficulty").uint8("junk").uint8("max_players"); break;
+        case 0x02: this.uint8("protocol_version").mcstring16("username").mcstring16("server_host").uint32be("server_port"); break;
+        case 0x03: this.mcstring16("message"); break;
+        case 0x04: this.uint64be("time"); break;
         case 0xfe: break;
       }
     }).tap(function() {
@@ -40,26 +40,6 @@ Parser.prototype.mcstring16 = function string16(name) {
       this.vars[name] = this.vars[name].toString("ucs2");
     });
   });
-};
-
-Parser.prototype.packet_0x00 = function packet_0x00() {
-  return this.uint32be("token");
-};
-
-Parser.prototype.packet_0x01 = function packet_0x01() {
-  return this.uint32be("eid").mcstring16("level_type").uint8("game_mode").uint8("dimension").uint8("difficulty").uint8("junk").uint8("max_players");
-};
-
-Parser.prototype.packet_0x02 = function packet_0x02() {
-  return this.uint8("protocol_version").mcstring16("username").mcstring16("server_host").uint32be("server_port");
-};
-
-Parser.prototype.packet_0x03 = function packet_0x03() {
-  return this.mcstring16("message");
-};
-
-Parser.prototype.packet_0x04 = function packet_0x04() {
-  return this.uint64be("time");
 };
 
 var parser = new Parser();
