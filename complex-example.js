@@ -5,6 +5,22 @@ var Dissolve = require("./index"),
 
 function Parser() {
   Dissolve.call(this);
+
+  this.loop(function(end) {
+    this.uint8("pid").tap(function() {
+      switch (this.vars.pid) {
+        case 0x00: this.packet_0x00(); break;
+        case 0x01: this.packet_0x01(); break;
+        case 0x02: this.packet_0x02(); break;
+        case 0x03: this.packet_0x03(); break;
+        case 0x04: this.packet_0x04(); break;
+        case 0xfe: break;
+      }
+    }).tap(function() {
+      this.emit("data", this.vars);
+      this.vars = {};
+    });
+  });
 }
 util.inherits(Parser, Dissolve);
 
@@ -47,21 +63,6 @@ Parser.prototype.packet_0x04 = function packet_0x04() {
 };
 
 var parser = new Parser();
-
-parser.loop(function(end) {
-  this.uint8("pid").tap(function() {
-    switch (this.vars.pid) {
-      case 0x00: this.packet_0x00(); break;
-      case 0x01: this.packet_0x01(); break;
-      case 0x02: this.packet_0x02(); break;
-      case 0x03: this.packet_0x03(); break;
-      case 0x04: this.packet_0x04(); break;
-    }
-  }).tap(function() {
-    this.emit("data", this.vars);
-    this.vars = {};
-  });
-});
 
 parser.on("data", function(e) {
   console.log(e);
