@@ -145,6 +145,10 @@ Numeric Methods
 * `uint64(name)` - unsigned, little endian 64 bit integer
 * `uint64le(name)` - unsigned, little endian 64 bit integer
 * `uint64be(name)` - unsigned, big endian 64 bit integer
+* `floatbe(data)` - big endian 32 bit float
+* `floatle(data)` - little endian 32 bit float
+* `doublebe(data)` - big endian 64 bit double
+* `doublele(data)` - little endian 64 bit double
 
 License
 -------
