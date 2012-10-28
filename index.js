@@ -86,7 +86,7 @@ Dissolve.prototype.write = function write(data) {
       continue;
     }
 
-    if (job.type.match(/^u?int(8|16|32|64)(le|be)?$/)) {
+    if (job.type.match(/^((u?int(8|16|32|64))|float|double)(le|be)?$/)) {
       switch (job.type) {
         case "int8le":  { this.vars[job.name] = this._buffer.readInt8(offset);  break; }
         case "uint8le": { this.vars[job.name] = this._buffer.readUInt8(offset); break; }
@@ -104,6 +104,10 @@ Dissolve.prototype.write = function write(data) {
         case "uint64le": { this.vars[job.name] = (Math.pow(2, 32) * this._buffer.readUInt32LE(offset + 4)) + this._buffer.readUInt32LE(offset); break; }
         case "int64be":  { this.vars[job.name] = (Math.pow(2, 32) * this._buffer.readInt32BE(offset)) + ((this._buffer[offset] & 0x80 === 0x80 ? 1 : -1) * this._buffer.readUInt32BE(offset + 4)); break; }
         case "uint64be": { this.vars[job.name] = (Math.pow(2, 32) * this._buffer.readUInt32BE(offset)) + this._buffer.readUInt32BE(offset + 4); break; }
+        case "floatle":  { this.vars[job.name] = this._buffer.readFloatLE(offset);  break; }
+        case "floatbe":  { this.vars[job.name] = this._buffer.readFloatBE(offset);  break; }
+        case "doublele": { this.vars[job.name] = this._buffer.readDoubleLE(offset); break; }
+        case "doublebe": { this.vars[job.name] = this._buffer.readDoubleBE(offset); break; }
       }
 
       this.jobs.shift();
@@ -125,27 +129,41 @@ Dissolve.prototype.write = function write(data) {
   return !this.paused && this.writable;
 };
 
-[8, 16, 32, 64].forEach(function(e) {
+[["float", 4], ["double", 8]].forEach(function(t) {
+  ["", "le", "be"].forEach(function(e) {
+    var id = [t[0], e].join(""),
+        type = [t[0], e || "le"].join(""),
+        length = t[1];
+
+    Dissolve.prototype[id] = function(name) {
+      this.jobs.push({
+        type: type,
+        length: length,
+        name: name,
+      });
+
+      return this;
+    };
+  });
+});
+
+[8, 16, 32, 64].forEach(function(b) {
   ["", "u"].forEach(function(s) {
-    Dissolve.prototype[s + "int" + e] = Dissolve.prototype[s + "int" + e + "le"] = function(name) {
-      this.jobs.push({
-        type: s + "int" + e + "le",
-        length: e / 8,
-        name: name,
-      });
+    ["", "le", "be"].forEach(function(e) {
+      var id = [s, "int", b, e].join(""),
+          type = [s, "int", b, e || "le"].join(""),
+          length = b / 8;
 
-      return this;
-    };
+      Dissolve.prototype[id] = function(name) {
+        this.jobs.push({
+          type: type,
+          length: length,
+          name: name,
+        });
 
-    Dissolve.prototype[s + "int" + e + "be"] = function(name) {
-      this.jobs.push({
-        type: s + "int" + e + "be",
-        length: e / 8,
-        name: name,
-      });
-
-      return this;
-    };
+        return this;
+      };
+    });
   });
 });
 
