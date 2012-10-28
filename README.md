@@ -12,6 +12,8 @@ and a solid, minimal implementation, you can be up and running in no time.
 
 (* implementing "more" is left as an exercise to the reader)
 
+If you want to produce binary data, might I suggest [concentrate](https://github.com/deoxxa/concentrate)?
+
 Features
 --------
 
