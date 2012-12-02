@@ -23,7 +23,7 @@ Features
 * Fast approximation of [u]int64 numbers in signed and unsigned variants
 * Extendable base class for building your own parsers and implementing
   custom types
-* Tiny (<200 LoC) implementation, allowing for easy debugging
+* Tiny (~250 LoC) implementation, allowing for easy debugging
 
 Installation
 ------------
