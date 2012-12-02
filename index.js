@@ -76,7 +76,26 @@ Dissolve.prototype.write = function write(data) {
 
       var jobs = this.jobs.slice();
       this.jobs.splice(0);
-      job.fn.apply(this, [function() { job.finished = true; }]);
+      if (job.name) {
+        if (typeof this.vars[job.name] === "undefined") {
+          this.vars[job.name] = [];
+        }
+
+        this.jobs.push({type: "down", into: "__loop_temp"});
+        job.fn.apply(this, [job.finish]);
+        this.jobs.push({type: "up"});
+
+        var _job = job;
+        this.jobs.push({type: "tap", fn: function() {
+          if (!_job.cancelled) {
+            this.vars[_job.name].push(this.vars.__loop_temp);
+          }
+
+          delete this.vars.__loop_temp;
+        }});
+      } else {
+        job.fn.apply(this, [function() { job.finished = true; }]);
+      }
       Array.prototype.splice.apply(this.jobs, [this.jobs.length, 0].concat(jobs));
 
       continue;
@@ -200,11 +219,20 @@ Dissolve.prototype.write = function write(data) {
       name = null;
     }
 
-    this.jobs.push({
+    var job = {
       type: e,
       name: name,
       fn: fn,
-    });
+    };
+
+    if (e === "loop") {
+      job.finish = function(cancel) {
+        job.finished = true;
+        job.cancelled = !!cancel;
+      };
+    }
+
+    this.jobs.push(job);
 
     return this;
   };
