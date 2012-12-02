@@ -14,7 +14,8 @@ var Dissolve = module.exports = function Dissolve() {
   Steez.call(this);
 
   this.jobs = [];
-  this.vars = {};
+  this.vars = Object.create(null);
+  this.vars_list = [];
 
   this._buffer = new Buffer(0);
 };
@@ -31,12 +32,37 @@ Dissolve.prototype.write = function write(data) {
   while (true && this.jobs.length) {
     var job = this.jobs[0];
 
+    if (job.type === "down") {
+      this.jobs.shift();
+
+      var tmp = this.vars;
+      this.vars_list.push(tmp);
+      this.vars = tmp[job.into] = Object.create(tmp);
+
+      continue;
+    }
+
+    if (job.type === "up") {
+      this.jobs.shift();
+
+      this.vars.__proto__ = null;
+      this.vars = this.vars_list.pop();
+
+      continue;
+    }
+
     if (job.type === "tap") {
       this.jobs.shift();
 
       var jobs = this.jobs.slice();
       this.jobs.splice(0);
-      job.fn.apply(this);
+      if (job.name) {
+        this.jobs.push({type: "down", into: job.name});
+        job.fn.apply(this);
+        this.jobs.push({type: "up"});
+      } else {
+        job.fn.apply(this);
+      }
       Array.prototype.splice.apply(this.jobs, [this.jobs.length, 0].concat(jobs));
 
       continue;
