@@ -39,8 +39,9 @@ Or via git:
 Usage
 -----
 
-Also see [example.js](https://github.com/deoxxa/dissolve/blob/master/example.js)
-and [complex-example.js](https://github.com/deoxxa/dissolve/blob/master/complex-example.js).
+Also see [example.js](https://github.com/deoxxa/dissolve/blob/master/example.js),
+[example-complex.js](https://github.com/deoxxa/dissolve/blob/master/example-complex.js)
+and [example-loop.js](https://github.com/deoxxa/dissolve/blob/master/example-loop.js).
 
 ```javascript
 #!/usr/bin/env node
@@ -80,7 +81,7 @@ called on.
 Tap
 ---
 
-`tap(callback)`
+`tap(name, callback)`
 
 This method allows you to "tap" into the parser at an arbitrary point. The
 callback will be called bound to the parser instance, so you can use parser
@@ -88,15 +89,31 @@ methods on `this`. Any additional parser steps you introduce inside the callback
 will be executed before any existing steps that are already scheduled to run
 after the `tap` call.
 
+If you provide a `name` parameter, all actions performed in the callback will be
+applied to a child object that will be put into a new property named after
+`name`. Note that in the callback, even if you provide a `name` parameter, you
+can still pretend you were in the outer "scope" because of some prototype
+trickery done with the `vars` object under the hood. You don't need to worry
+about that too much, the examples should make it a bit clearer.
+
 Loop
 ----
 
-`loop(callback)`
+`loop(name, callback)`
 
 This method is like `tap` except that the callback is called over and over until
 signalled to stop. You do this by calling the `end` function that's provided as
-the first argument to your callback. The same semantics for job ordering apply
-as for `tap`.
+the first argument to your callback. When you call the `end` function, you can
+provide an optional truthy/non-truthy flag to tell Dissolve to ignore the result
+of the iteration of the loop where `end` was called. This is useful if you are
+dumping the 
+
+If you provide a `name` parameter, a new array will be placed into a property
+named for that parameter, and after each iteration of the loop, any new values
+will be appended to the array as an object. As with the `name` stuff on `tap`,
+the examples will make that explanation a lot clearer.
+
+The same semantics for job ordering and "scoping" apply as for `tap`.
 
 Basic Parsing Methods
 ---------------------
