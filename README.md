@@ -106,7 +106,7 @@ signalled to stop. You do this by calling the `end` function that's provided as
 the first argument to your callback. When you call the `end` function, you can
 provide an optional truthy/non-truthy flag to tell Dissolve to ignore the result
 of the iteration of the loop where `end` was called. This is useful if you are
-dumping the 
+reading until a null entry or similar.
 
 If you provide a `name` parameter, a new array will be placed into a property
 named for that parameter, and after each iteration of the loop, any new values
