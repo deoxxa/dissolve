@@ -26,7 +26,7 @@ Dissolve.prototype.write = function write(data) {
 
   this._buffer = Buffer.concat([this._buffer, data]);
 
-  while (true && this.jobs.length) {
+  while (this.jobs.length) {
     var job = this.jobs[0];
 
     if (job.type === "down") {
@@ -91,7 +91,7 @@ Dissolve.prototype.write = function write(data) {
           delete this.vars.__loop_temp;
         }});
       } else {
-        job.fn.apply(this, [function() { job.finished = true; }]);
+        job.fn.apply(this, [job.finish]);
       }
       Array.prototype.splice.apply(this.jobs, [this.jobs.length, 0].concat(jobs));
 
