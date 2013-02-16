@@ -1,6 +1,6 @@
 var Dissolve = require("../index");
 
-describe("Integers", function() {
+describe("integers", function() {
   [
     // 8-bit
     ["uint8 0x00", "uint8", "00", 0],

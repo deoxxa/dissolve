@@ -1,6 +1,6 @@
 var Dissolve = require("../index");
 
-describe("Loop", function() {
+describe("loop", function() {
   it("should emit data 3 times then end", function(done) {
     var reader = Dissolve().loop(function(end) {
       this.uint8("x").tap(function() {
