@@ -2,7 +2,7 @@ var Dissolve = require("../index");
 
 describe("tap", function() {
   it("should emit data 2 times then end", function(done) {
-    var parser = Dissolve().uint8("x").tap(function() {
+    var reader = Dissolve().uint8("x").tap(function() {
       this.emit("data", this.vars.x);
 
       this.uint8("y").tap(function() {
@@ -16,11 +16,11 @@ describe("tap", function() {
 
     var counter = 0;
 
-    parser.on("data", function() {
+    reader.on("data", function() {
       counter++;
     });
 
-    parser.on("done", function() {
+    reader.on("done", function() {
       if (counter !== 2) {
         return done(Error("invalid counter value"));
       } else {
@@ -28,6 +28,6 @@ describe("tap", function() {
       }
     });
 
-    parser.write(Buffer([0x01, 0x01]));
+    reader.write(Buffer([0x01, 0x01]));
   });
 });

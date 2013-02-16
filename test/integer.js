@@ -113,14 +113,12 @@ describe("Integers", function() {
     ["int32le 0xffffffff",  "int32le",  "ffffffff", -1],
   ].forEach(function(e) {
     describe(e[0], function() {
-      var parser = new Dissolve();
-
-      parser[e[1]]("i").tap(function() {
-        this.emit("data", this.vars.i);
-      });
-
       it("should return " + e[3], function(done) {
-        parser.on("data", function(data) {
+        var reader = Dissolve()[e[1]]("i").tap(function() {
+          this.emit("data", this.vars.i);
+        });
+
+        reader.on("data", function(data) {
           if (data !== e[3]) {
             return done(Error("expected " + JSON.stringify(e[3]) + " but got " + JSON.stringify(data)));
           } else {
@@ -128,7 +126,7 @@ describe("Integers", function() {
           }
         });
 
-        parser.write(Buffer(e[2], "hex"));
+        reader.write(Buffer(e[2], "hex"));
       });
     });
   });
