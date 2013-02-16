@@ -30,4 +30,32 @@ describe("tap", function() {
 
     reader.write(Buffer([0x01, 0x01]));
   });
+
+  it("should populate child objects correctly", function(done) {
+    var reader = Dissolve().tap("a", function() {
+      this.uint8("x").tap("b", function() {
+        this.uint8("y").tap(function() {
+          this.emit("data", this.vars);
+        });
+      });
+    });
+
+    reader.on("data", function(e) {
+      if (typeof e !== "object" || e === null) {
+        return done(Error("invalid payload for data event"));
+      }
+
+      if (typeof e.a !== "object" || e.a === null || typeof e.a.b !== "object" || e.a.b === null) {
+        return done(Error("child object(s) not set correctly"));
+      }
+
+      if (typeof e.a.x !== "number" || typeof e.a.b.y !== "number") {
+        return done(Error("child object(s) not set correctly"));
+      }
+
+      return done();
+    });
+
+    reader.write(Buffer([0x01, 0x01]));
+  });
 });
