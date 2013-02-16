@@ -30,4 +30,34 @@ describe("loop", function() {
 
     reader.write(Buffer([0x01, 0x01, 0x01, 0x00, 0x02]));
   });
+
+  it("should populate an array correctly", function(done) {
+    var reader = Dissolve().loop("things", function(end) {
+      this.uint8("x").tap(function() {
+        if (this.vars.x === 0) {
+          return end(true);
+        }
+      });
+    }).tap(function() {
+      this.emit("data", this.vars);
+    });
+
+    reader.on("data", function(e) {
+      if (typeof e !== "object" || e === null) {
+        return done(Error("invalid payload for data event"));
+      }
+
+      if (!Array.isArray(e.things)) {
+        return done(Error("array property not set or not correct type"));
+      }
+
+      if (e.things.length !== 3) {
+        return done(Error("invalid number of entries"));
+      }
+
+      return done();
+    });
+
+    reader.write(Buffer([0x01, 0x01, 0x01, 0x00]));
+  });
 });
