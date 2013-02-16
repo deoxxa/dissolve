@@ -1,131 +1,1667 @@
 var Dissolve = require("../index");
 
 describe("integers", function() {
-  [
-    // 8-bit
-    ["uint8 0x00", "uint8", "00", 0],
-    ["uint8 0x01", "uint8", "01", 1],
-    ["uint8 0x7f", "uint8", "7f", 127],
-    ["uint8 0xff", "uint8", "ff", 255],
-    ["int8 0x00",  "int8",  "00", 0],
-    ["int8 0x01",  "int8",  "01", 1],
-    ["int8 0x7f",  "int8",  "7f", 127],
-    ["int8 0xff",  "int8",  "ff", -1],
-    // big-endian 16-bit
-    ["uint16be 0x0000", "uint16be", "0000", 0],
-    ["uint16be 0x0001", "uint16be", "0001", 1],
-    ["uint16be 0x007f", "uint16be", "007f", 127],
-    ["uint16be 0x00ff", "uint16be", "00ff", 255],
-    ["int16be 0x0000",  "int16be",  "0000", 0],
-    ["int16be 0x0001",  "int16be",  "0001", 1],
-    ["int16be 0x007f",  "int16be",  "007f", 127],
-    ["int16be 0x00ff",  "int16be",  "00ff", 255],
-    ["uint16be 0x7f00", "uint16be", "7f00", 32512],
-    ["uint16be 0x7f01", "uint16be", "7f01", 32513],
-    ["uint16be 0x7f7f", "uint16be", "7f7f", 32639],
-    ["uint16be 0x7fff", "uint16be", "7fff", 32767],
-    ["int16be 0x7f00",  "int16be",  "7f00", 32512],
-    ["int16be 0x7f01",  "int16be",  "7f01", 32513],
-    ["int16be 0x7f7f",  "int16be",  "7f7f", 32639],
-    ["int16be 0x7fff",  "int16be",  "7fff", 32767],
-    ["uint16be 0xff00", "uint16be", "ff00", 65280],
-    ["uint16be 0xff01", "uint16be", "ff01", 65281],
-    ["uint16be 0xff7f", "uint16be", "ff7f", 65407],
-    ["uint16be 0xffff", "uint16be", "ffff", 65535],
-    ["int16be 0xff00",  "int16be",  "ff00", -256],
-    ["int16be 0xff01",  "int16be",  "ff01", -255],
-    ["int16be 0xff7f",  "int16be",  "ff7f", -129],
-    ["int16be 0xffff",  "int16be",  "ffff", -1],
-    // little-endian 16-bit
-    ["uint16le 0x0000", "uint16le", "0000", 0],
-    ["uint16le 0x0100", "uint16le", "0100", 1],
-    ["uint16le 0x7f00", "uint16le", "7f00", 127],
-    ["uint16le 0xff00", "uint16le", "ff00", 255],
-    ["int16le 0x0000",  "int16le",  "0000", 0],
-    ["int16le 0x0100",  "int16le",  "0100", 1],
-    ["int16le 0x7f00",  "int16le",  "7f00", 127],
-    ["int16le 0xff00",  "int16le",  "ff00", 255],
-    ["uint16le 0x007f", "uint16le", "007f", 32512],
-    ["uint16le 0x017f", "uint16le", "017f", 32513],
-    ["uint16le 0x7f7f", "uint16le", "7f7f", 32639],
-    ["uint16le 0xff7f", "uint16le", "ff7f", 32767],
-    ["int16le 0x007f",  "int16le",  "007f", 32512],
-    ["int16le 0x017f",  "int16le",  "017f", 32513],
-    ["int16le 0x7f7f",  "int16le",  "7f7f", 32639],
-    ["int16le 0xff7f",  "int16le",  "ff7f", 32767],
-    ["uint16le 0x00ff", "uint16le", "00ff", 65280],
-    ["uint16le 0x01ff", "uint16le", "01ff", 65281],
-    ["uint16le 0x7fff", "uint16le", "7fff", 65407],
-    ["uint16le 0xffff", "uint16le", "ffff", 65535],
-    ["int16le 0x00ff",  "int16le",  "00ff", -256],
-    ["int16le 0x01ff",  "int16le",  "01ff", -255],
-    ["int16le 0x7fff",  "int16le",  "7fff", -129],
-    ["int16le 0xffff",  "int16le",  "ffff", -1],
-    // big-endian 32-bit
-    ["uint32be 0x00000000", "uint32be", "00000000", 0],
-    ["uint32be 0x00000001", "uint32be", "00000001", 1],
-    ["uint32be 0x0000007f", "uint32be", "0000007f", 127],
-    ["uint32be 0x000000ff", "uint32be", "000000ff", 255],
-    ["int32be 0x00000000",  "int32be",  "00000000", 0],
-    ["int32be 0x00000001",  "int32be",  "00000001", 1],
-    ["int32be 0x0000007f",  "int32be",  "0000007f", 127],
-    ["int32be 0x000000ff",  "int32be",  "000000ff", 255],
-    ["uint32be 0x7f000000", "uint32be", "7f000000", 2130706432],
-    ["uint32be 0x7f000001", "uint32be", "7f000001", 2130706433],
-    ["uint32be 0x7f00007f", "uint32be", "7f00007f", 2130706559],
-    ["uint32be 0x7f0000ff", "uint32be", "7f0000ff", 2130706687],
-    ["int32be 0x7f000000",  "int32be",  "7f000000", 2130706432],
-    ["int32be 0x7f000001",  "int32be",  "7f000001", 2130706433],
-    ["int32be 0x7f00007f",  "int32be",  "7f00007f", 2130706559],
-    ["int32be 0x7f0000ff",  "int32be",  "7f0000ff", 2130706687],
-    ["uint32be 0xff000000", "uint32be", "ff000000", 4278190080],
-    ["uint32be 0xff000001", "uint32be", "ff000001", 4278190081],
-    ["uint32be 0xff00007f", "uint32be", "ff00007f", 4278190207],
-    ["uint32be 0xff0000ff", "uint32be", "ff0000ff", 4278190335],
-    ["int32be 0xffffff00",  "int32be",  "ffffff00", -256],
-    ["int32be 0xffffff01",  "int32be",  "ffffff01", -255],
-    ["int32be 0xffffff7f",  "int32be",  "ffffff7f", -129],
-    ["int32be 0xffffffff",  "int32be",  "ffffffff", -1],
-    // little-endian 32-bit
-    ["uint32le 0x00000000", "uint32le", "00000000", 0],
-    ["uint32le 0x01000000", "uint32le", "01000000", 1],
-    ["uint32le 0x7f000000", "uint32le", "7f000000", 127],
-    ["uint32le 0xff000000", "uint32le", "ff000000", 255],
-    ["int32le 0x00000000",  "int32le",  "00000000", 0],
-    ["int32le 0x01000000",  "int32le",  "01000000", 1],
-    ["int32le 0x7f000000",  "int32le",  "7f000000", 127],
-    ["int32le 0xff000000",  "int32le",  "ff000000", 255],
-    ["uint32le 0x0000007f", "uint32le", "0000007f", 2130706432],
-    ["uint32le 0x0100007f", "uint32le", "0100007f", 2130706433],
-    ["uint32le 0x7f00007f", "uint32le", "7f00007f", 2130706559],
-    ["uint32le 0xff00007f", "uint32le", "ff00007f", 2130706687],
-    ["int32le 0x0000007f",  "int32le",  "0000007f", 2130706432],
-    ["int32le 0x0100007f",  "int32le",  "0100007f", 2130706433],
-    ["int32le 0x7f00007f",  "int32le",  "7f00007f", 2130706559],
-    ["int32le 0xff00007f",  "int32le",  "ff00007f", 2130706687],
-    ["uint32le 0x000000ff", "uint32le", "000000ff", 4278190080],
-    ["uint32le 0x010000ff", "uint32le", "010000ff", 4278190081],
-    ["uint32le 0x7f0000ff", "uint32le", "7f0000ff", 4278190207],
-    ["uint32le 0xff0000ff", "uint32le", "ff0000ff", 4278190335],
-    ["int32le 0x00ffffff",  "int32le",  "00ffffff", -256],
-    ["int32le 0x01ffffff",  "int32le",  "01ffffff", -255],
-    ["int32le 0x7fffffff",  "int32le",  "7fffffff", -129],
-    ["int32le 0xffffffff",  "int32le",  "ffffffff", -1],
-  ].forEach(function(e) {
-    it(e[0] + " should return " + e[3], function(done) {
-      var reader = Dissolve()[e[1]]("i").tap(function() {
-        this.emit("data", this.vars.i);
-      });
-
-      reader.on("data", function(data) {
-        if (data !== e[3]) {
-          return done(Error("expected " + JSON.stringify(e[3]) + " but got " + JSON.stringify(data)));
-        } else {
-          return done();
-        }
-      });
-
-      reader.write(Buffer(e[2], "hex"));
+  it("00 through uint8 should result in 0", function(done) {
+    var reader = Dissolve().uint8("i").tap(function() {
+      this.emit("data", this.vars.i);
     });
+
+    reader.on("data", function(data) {
+      if (data !== 0) {
+        return done(Error("expected 0 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00", "hex"));
+  });
+
+  it("01 through uint8 should result in 1", function(done) {
+    var reader = Dissolve().uint8("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 1) {
+        return done(Error("expected 1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("01", "hex"));
+  });
+
+  it("7f through uint8 should result in 127", function(done) {
+    var reader = Dissolve().uint8("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 127) {
+        return done(Error("expected 127 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f", "hex"));
+  });
+
+  it("ff through uint8 should result in 255", function(done) {
+    var reader = Dissolve().uint8("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 255) {
+        return done(Error("expected 255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff", "hex"));
+  });
+
+  it("00 through int8 should result in 0", function(done) {
+    var reader = Dissolve().int8("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 0) {
+        return done(Error("expected 0 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00", "hex"));
+  });
+
+  it("01 through int8 should result in 1", function(done) {
+    var reader = Dissolve().int8("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 1) {
+        return done(Error("expected 1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("01", "hex"));
+  });
+
+  it("7f through int8 should result in 127", function(done) {
+    var reader = Dissolve().int8("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 127) {
+        return done(Error("expected 127 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f", "hex"));
+  });
+
+  it("ff through int8 should result in -1", function(done) {
+    var reader = Dissolve().int8("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -1) {
+        return done(Error("expected -1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff", "hex"));
+  });
+
+  it("0000 through uint16be should result in 0", function(done) {
+    var reader = Dissolve().uint16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 0) {
+        return done(Error("expected 0 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0000", "hex"));
+  });
+
+  it("0001 through uint16be should result in 1", function(done) {
+    var reader = Dissolve().uint16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 1) {
+        return done(Error("expected 1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0001", "hex"));
+  });
+
+  it("007f through uint16be should result in 127", function(done) {
+    var reader = Dissolve().uint16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 127) {
+        return done(Error("expected 127 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("007f", "hex"));
+  });
+
+  it("00ff through uint16be should result in 255", function(done) {
+    var reader = Dissolve().uint16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 255) {
+        return done(Error("expected 255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00ff", "hex"));
+  });
+
+  it("0000 through int16be should result in 0", function(done) {
+    var reader = Dissolve().int16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 0) {
+        return done(Error("expected 0 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0000", "hex"));
+  });
+
+  it("0001 through int16be should result in 1", function(done) {
+    var reader = Dissolve().int16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 1) {
+        return done(Error("expected 1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0001", "hex"));
+  });
+
+  it("007f through int16be should result in 127", function(done) {
+    var reader = Dissolve().int16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 127) {
+        return done(Error("expected 127 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("007f", "hex"));
+  });
+
+  it("00ff through int16be should result in 255", function(done) {
+    var reader = Dissolve().int16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 255) {
+        return done(Error("expected 255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00ff", "hex"));
+  });
+
+  it("7f00 through uint16be should result in 32512", function(done) {
+    var reader = Dissolve().uint16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32512) {
+        return done(Error("expected 32512 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f00", "hex"));
+  });
+
+  it("7f01 through uint16be should result in 32513", function(done) {
+    var reader = Dissolve().uint16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32513) {
+        return done(Error("expected 32513 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f01", "hex"));
+  });
+
+  it("7f7f through uint16be should result in 32639", function(done) {
+    var reader = Dissolve().uint16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32639) {
+        return done(Error("expected 32639 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f7f", "hex"));
+  });
+
+  it("7fff through uint16be should result in 32767", function(done) {
+    var reader = Dissolve().uint16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32767) {
+        return done(Error("expected 32767 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7fff", "hex"));
+  });
+
+  it("7f00 through int16be should result in 32512", function(done) {
+    var reader = Dissolve().int16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32512) {
+        return done(Error("expected 32512 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f00", "hex"));
+  });
+
+  it("7f01 through int16be should result in 32513", function(done) {
+    var reader = Dissolve().int16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32513) {
+        return done(Error("expected 32513 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f01", "hex"));
+  });
+
+  it("7f7f through int16be should result in 32639", function(done) {
+    var reader = Dissolve().int16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32639) {
+        return done(Error("expected 32639 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f7f", "hex"));
+  });
+
+  it("7fff through int16be should result in 32767", function(done) {
+    var reader = Dissolve().int16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32767) {
+        return done(Error("expected 32767 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7fff", "hex"));
+  });
+
+  it("ff00 through uint16be should result in 65280", function(done) {
+    var reader = Dissolve().uint16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 65280) {
+        return done(Error("expected 65280 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff00", "hex"));
+  });
+
+  it("ff01 through uint16be should result in 65281", function(done) {
+    var reader = Dissolve().uint16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 65281) {
+        return done(Error("expected 65281 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff01", "hex"));
+  });
+
+  it("ff7f through uint16be should result in 65407", function(done) {
+    var reader = Dissolve().uint16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 65407) {
+        return done(Error("expected 65407 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff7f", "hex"));
+  });
+
+  it("ffff through uint16be should result in 65535", function(done) {
+    var reader = Dissolve().uint16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 65535) {
+        return done(Error("expected 65535 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ffff", "hex"));
+  });
+
+  it("ff00 through int16be should result in -256", function(done) {
+    var reader = Dissolve().int16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -256) {
+        return done(Error("expected -256 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff00", "hex"));
+  });
+
+  it("ff01 through int16be should result in -255", function(done) {
+    var reader = Dissolve().int16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -255) {
+        return done(Error("expected -255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff01", "hex"));
+  });
+
+  it("ff7f through int16be should result in -129", function(done) {
+    var reader = Dissolve().int16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -129) {
+        return done(Error("expected -129 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff7f", "hex"));
+  });
+
+  it("ffff through int16be should result in -1", function(done) {
+    var reader = Dissolve().int16be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -1) {
+        return done(Error("expected -1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ffff", "hex"));
+  });
+
+  it("0000 through uint16le should result in 0", function(done) {
+    var reader = Dissolve().uint16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 0) {
+        return done(Error("expected 0 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0000", "hex"));
+  });
+
+  it("0100 through uint16le should result in 1", function(done) {
+    var reader = Dissolve().uint16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 1) {
+        return done(Error("expected 1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0100", "hex"));
+  });
+
+  it("7f00 through uint16le should result in 127", function(done) {
+    var reader = Dissolve().uint16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 127) {
+        return done(Error("expected 127 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f00", "hex"));
+  });
+
+  it("ff00 through uint16le should result in 255", function(done) {
+    var reader = Dissolve().uint16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 255) {
+        return done(Error("expected 255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff00", "hex"));
+  });
+
+  it("0000 through int16le should result in 0", function(done) {
+    var reader = Dissolve().int16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 0) {
+        return done(Error("expected 0 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0000", "hex"));
+  });
+
+  it("0100 through int16le should result in 1", function(done) {
+    var reader = Dissolve().int16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 1) {
+        return done(Error("expected 1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0100", "hex"));
+  });
+
+  it("7f00 through int16le should result in 127", function(done) {
+    var reader = Dissolve().int16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 127) {
+        return done(Error("expected 127 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f00", "hex"));
+  });
+
+  it("ff00 through int16le should result in 255", function(done) {
+    var reader = Dissolve().int16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 255) {
+        return done(Error("expected 255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff00", "hex"));
+  });
+
+  it("007f through uint16le should result in 32512", function(done) {
+    var reader = Dissolve().uint16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32512) {
+        return done(Error("expected 32512 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("007f", "hex"));
+  });
+
+  it("017f through uint16le should result in 32513", function(done) {
+    var reader = Dissolve().uint16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32513) {
+        return done(Error("expected 32513 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("017f", "hex"));
+  });
+
+  it("7f7f through uint16le should result in 32639", function(done) {
+    var reader = Dissolve().uint16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32639) {
+        return done(Error("expected 32639 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f7f", "hex"));
+  });
+
+  it("ff7f through uint16le should result in 32767", function(done) {
+    var reader = Dissolve().uint16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32767) {
+        return done(Error("expected 32767 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff7f", "hex"));
+  });
+
+  it("007f through int16le should result in 32512", function(done) {
+    var reader = Dissolve().int16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32512) {
+        return done(Error("expected 32512 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("007f", "hex"));
+  });
+
+  it("017f through int16le should result in 32513", function(done) {
+    var reader = Dissolve().int16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32513) {
+        return done(Error("expected 32513 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("017f", "hex"));
+  });
+
+  it("7f7f through int16le should result in 32639", function(done) {
+    var reader = Dissolve().int16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32639) {
+        return done(Error("expected 32639 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f7f", "hex"));
+  });
+
+  it("ff7f through int16le should result in 32767", function(done) {
+    var reader = Dissolve().int16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 32767) {
+        return done(Error("expected 32767 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff7f", "hex"));
+  });
+
+  it("00ff through uint16le should result in 65280", function(done) {
+    var reader = Dissolve().uint16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 65280) {
+        return done(Error("expected 65280 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00ff", "hex"));
+  });
+
+  it("01ff through uint16le should result in 65281", function(done) {
+    var reader = Dissolve().uint16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 65281) {
+        return done(Error("expected 65281 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("01ff", "hex"));
+  });
+
+  it("7fff through uint16le should result in 65407", function(done) {
+    var reader = Dissolve().uint16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 65407) {
+        return done(Error("expected 65407 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7fff", "hex"));
+  });
+
+  it("ffff through uint16le should result in 65535", function(done) {
+    var reader = Dissolve().uint16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 65535) {
+        return done(Error("expected 65535 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ffff", "hex"));
+  });
+
+  it("00ff through int16le should result in -256", function(done) {
+    var reader = Dissolve().int16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -256) {
+        return done(Error("expected -256 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00ff", "hex"));
+  });
+
+  it("01ff through int16le should result in -255", function(done) {
+    var reader = Dissolve().int16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -255) {
+        return done(Error("expected -255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("01ff", "hex"));
+  });
+
+  it("7fff through int16le should result in -129", function(done) {
+    var reader = Dissolve().int16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -129) {
+        return done(Error("expected -129 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7fff", "hex"));
+  });
+
+  it("ffff through int16le should result in -1", function(done) {
+    var reader = Dissolve().int16le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -1) {
+        return done(Error("expected -1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ffff", "hex"));
+  });
+
+  it("00000000 through uint32be should result in 0", function(done) {
+    var reader = Dissolve().uint32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 0) {
+        return done(Error("expected 0 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00000000", "hex"));
+  });
+
+  it("00000001 through uint32be should result in 1", function(done) {
+    var reader = Dissolve().uint32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 1) {
+        return done(Error("expected 1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00000001", "hex"));
+  });
+
+  it("0000007f through uint32be should result in 127", function(done) {
+    var reader = Dissolve().uint32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 127) {
+        return done(Error("expected 127 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0000007f", "hex"));
+  });
+
+  it("000000ff through uint32be should result in 255", function(done) {
+    var reader = Dissolve().uint32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 255) {
+        return done(Error("expected 255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("000000ff", "hex"));
+  });
+
+  it("00000000 through int32be should result in 0", function(done) {
+    var reader = Dissolve().int32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 0) {
+        return done(Error("expected 0 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00000000", "hex"));
+  });
+
+  it("00000001 through int32be should result in 1", function(done) {
+    var reader = Dissolve().int32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 1) {
+        return done(Error("expected 1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00000001", "hex"));
+  });
+
+  it("0000007f through int32be should result in 127", function(done) {
+    var reader = Dissolve().int32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 127) {
+        return done(Error("expected 127 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0000007f", "hex"));
+  });
+
+  it("000000ff through int32be should result in 255", function(done) {
+    var reader = Dissolve().int32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 255) {
+        return done(Error("expected 255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("000000ff", "hex"));
+  });
+
+  it("7f000000 through uint32be should result in 2130706432", function(done) {
+    var reader = Dissolve().uint32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706432) {
+        return done(Error("expected 2130706432 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f000000", "hex"));
+  });
+
+  it("7f000001 through uint32be should result in 2130706433", function(done) {
+    var reader = Dissolve().uint32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706433) {
+        return done(Error("expected 2130706433 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f000001", "hex"));
+  });
+
+  it("7f00007f through uint32be should result in 2130706559", function(done) {
+    var reader = Dissolve().uint32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706559) {
+        return done(Error("expected 2130706559 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f00007f", "hex"));
+  });
+
+  it("7f0000ff through uint32be should result in 2130706687", function(done) {
+    var reader = Dissolve().uint32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706687) {
+        return done(Error("expected 2130706687 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f0000ff", "hex"));
+  });
+
+  it("7f000000 through int32be should result in 2130706432", function(done) {
+    var reader = Dissolve().int32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706432) {
+        return done(Error("expected 2130706432 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f000000", "hex"));
+  });
+
+  it("7f000001 through int32be should result in 2130706433", function(done) {
+    var reader = Dissolve().int32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706433) {
+        return done(Error("expected 2130706433 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f000001", "hex"));
+  });
+
+  it("7f00007f through int32be should result in 2130706559", function(done) {
+    var reader = Dissolve().int32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706559) {
+        return done(Error("expected 2130706559 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f00007f", "hex"));
+  });
+
+  it("7f0000ff through int32be should result in 2130706687", function(done) {
+    var reader = Dissolve().int32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706687) {
+        return done(Error("expected 2130706687 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f0000ff", "hex"));
+  });
+
+  it("ff000000 through uint32be should result in 4278190080", function(done) {
+    var reader = Dissolve().uint32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 4278190080) {
+        return done(Error("expected 4278190080 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff000000", "hex"));
+  });
+
+  it("ff000001 through uint32be should result in 4278190081", function(done) {
+    var reader = Dissolve().uint32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 4278190081) {
+        return done(Error("expected 4278190081 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff000001", "hex"));
+  });
+
+  it("ff00007f through uint32be should result in 4278190207", function(done) {
+    var reader = Dissolve().uint32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 4278190207) {
+        return done(Error("expected 4278190207 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff00007f", "hex"));
+  });
+
+  it("ff0000ff through uint32be should result in 4278190335", function(done) {
+    var reader = Dissolve().uint32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 4278190335) {
+        return done(Error("expected 4278190335 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff0000ff", "hex"));
+  });
+
+  it("ffffff00 through int32be should result in -256", function(done) {
+    var reader = Dissolve().int32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -256) {
+        return done(Error("expected -256 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ffffff00", "hex"));
+  });
+
+  it("ffffff01 through int32be should result in -255", function(done) {
+    var reader = Dissolve().int32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -255) {
+        return done(Error("expected -255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ffffff01", "hex"));
+  });
+
+  it("ffffff7f through int32be should result in -129", function(done) {
+    var reader = Dissolve().int32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -129) {
+        return done(Error("expected -129 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ffffff7f", "hex"));
+  });
+
+  it("ffffffff through int32be should result in -1", function(done) {
+    var reader = Dissolve().int32be("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -1) {
+        return done(Error("expected -1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ffffffff", "hex"));
+  });
+
+  it("00000000 through uint32le should result in 0", function(done) {
+    var reader = Dissolve().uint32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 0) {
+        return done(Error("expected 0 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00000000", "hex"));
+  });
+
+  it("01000000 through uint32le should result in 1", function(done) {
+    var reader = Dissolve().uint32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 1) {
+        return done(Error("expected 1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("01000000", "hex"));
+  });
+
+  it("7f000000 through uint32le should result in 127", function(done) {
+    var reader = Dissolve().uint32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 127) {
+        return done(Error("expected 127 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f000000", "hex"));
+  });
+
+  it("ff000000 through uint32le should result in 255", function(done) {
+    var reader = Dissolve().uint32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 255) {
+        return done(Error("expected 255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff000000", "hex"));
+  });
+
+  it("00000000 through int32le should result in 0", function(done) {
+    var reader = Dissolve().int32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 0) {
+        return done(Error("expected 0 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00000000", "hex"));
+  });
+
+  it("01000000 through int32le should result in 1", function(done) {
+    var reader = Dissolve().int32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 1) {
+        return done(Error("expected 1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("01000000", "hex"));
+  });
+
+  it("7f000000 through int32le should result in 127", function(done) {
+    var reader = Dissolve().int32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 127) {
+        return done(Error("expected 127 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f000000", "hex"));
+  });
+
+  it("ff000000 through int32le should result in 255", function(done) {
+    var reader = Dissolve().int32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 255) {
+        return done(Error("expected 255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff000000", "hex"));
+  });
+
+  it("0000007f through uint32le should result in 2130706432", function(done) {
+    var reader = Dissolve().uint32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706432) {
+        return done(Error("expected 2130706432 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0000007f", "hex"));
+  });
+
+  it("0100007f through uint32le should result in 2130706433", function(done) {
+    var reader = Dissolve().uint32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706433) {
+        return done(Error("expected 2130706433 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0100007f", "hex"));
+  });
+
+  it("7f00007f through uint32le should result in 2130706559", function(done) {
+    var reader = Dissolve().uint32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706559) {
+        return done(Error("expected 2130706559 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f00007f", "hex"));
+  });
+
+  it("ff00007f through uint32le should result in 2130706687", function(done) {
+    var reader = Dissolve().uint32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706687) {
+        return done(Error("expected 2130706687 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff00007f", "hex"));
+  });
+
+  it("0000007f through int32le should result in 2130706432", function(done) {
+    var reader = Dissolve().int32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706432) {
+        return done(Error("expected 2130706432 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0000007f", "hex"));
+  });
+
+  it("0100007f through int32le should result in 2130706433", function(done) {
+    var reader = Dissolve().int32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706433) {
+        return done(Error("expected 2130706433 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("0100007f", "hex"));
+  });
+
+  it("7f00007f through int32le should result in 2130706559", function(done) {
+    var reader = Dissolve().int32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706559) {
+        return done(Error("expected 2130706559 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f00007f", "hex"));
+  });
+
+  it("ff00007f through int32le should result in 2130706687", function(done) {
+    var reader = Dissolve().int32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 2130706687) {
+        return done(Error("expected 2130706687 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff00007f", "hex"));
+  });
+
+  it("000000ff through uint32le should result in 4278190080", function(done) {
+    var reader = Dissolve().uint32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 4278190080) {
+        return done(Error("expected 4278190080 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("000000ff", "hex"));
+  });
+
+  it("010000ff through uint32le should result in 4278190081", function(done) {
+    var reader = Dissolve().uint32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 4278190081) {
+        return done(Error("expected 4278190081 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("010000ff", "hex"));
+  });
+
+  it("7f0000ff through uint32le should result in 4278190207", function(done) {
+    var reader = Dissolve().uint32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 4278190207) {
+        return done(Error("expected 4278190207 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7f0000ff", "hex"));
+  });
+
+  it("ff0000ff through uint32le should result in 4278190335", function(done) {
+    var reader = Dissolve().uint32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== 4278190335) {
+        return done(Error("expected 4278190335 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ff0000ff", "hex"));
+  });
+
+  it("00ffffff through int32le should result in -256", function(done) {
+    var reader = Dissolve().int32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -256) {
+        return done(Error("expected -256 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("00ffffff", "hex"));
+  });
+
+  it("01ffffff through int32le should result in -255", function(done) {
+    var reader = Dissolve().int32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -255) {
+        return done(Error("expected -255 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("01ffffff", "hex"));
+  });
+
+  it("7fffffff through int32le should result in -129", function(done) {
+    var reader = Dissolve().int32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -129) {
+        return done(Error("expected -129 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("7fffffff", "hex"));
+  });
+
+  it("ffffffff through int32le should result in -1", function(done) {
+    var reader = Dissolve().int32le("i").tap(function() {
+      this.emit("data", this.vars.i);
+    });
+
+    reader.on("data", function(data) {
+      if (data !== -1) {
+        return done(Error("expected -1 but got " + JSON.stringify(data)));
+      } else {
+        return done();
+      }
+    });
+
+    reader.write(Buffer("ffffffff", "hex"));
   });
 });
