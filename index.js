@@ -24,10 +24,7 @@ util.inherits(Dissolve, Steez);
 Dissolve.prototype.write = function write(data) {
   var offset = 0;
 
-  var tmp = new Buffer(this._buffer.length + data.length);
-  this._buffer.copy(tmp);
-  data.copy(tmp, this._buffer.length);
-  this._buffer = tmp;
+  this._buffer = Buffer.concat([this._buffer, data]);
 
   while (true && this.jobs.length) {
     var job = this.jobs[0];
