@@ -3,10 +3,15 @@
   "version": "0.2.1",
   "description": "Parse and consume binary streams with a neat DSL",
   "main": "index.js",
+  "scripts": {
+    "test": "mocha -R spec"
+  },
   "dependencies": {
     "steez": "~0.4.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "~1.8.1"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/deoxxa/dissolve.git"
