@@ -7,20 +7,21 @@ describe("loop", function() {
         if (this.vars.x === 0) {
           return end(true);
         } else {
-          this.emit("data", this.vars.x);
+          this.push(this.vars);
         }
       });
-    }).tap(function() {
-      this.emit("done");
     });
 
     var counter = 0;
 
-    reader.on("data", function(e) {
-      counter++;
+    reader.on("readable", function() {
+      var e;
+      while (e = reader.read()) {
+        counter++;
+      }
     });
 
-    reader.on("done", function() {
+    reader.on("end", function() {
       if (counter !== 3) {
         return done(Error("invalid counter value"));
       } else {
@@ -39,23 +40,26 @@ describe("loop", function() {
         }
       });
     }).tap(function() {
-      this.emit("data", this.vars);
+      this.push(this.vars);
     });
 
-    reader.on("data", function(e) {
-      if (typeof e !== "object" || e === null) {
-        return done(Error("invalid payload for data event"));
-      }
+    reader.on("readable", function() {
+      var e;
+      while (e = reader.read()) {
+        if (typeof e !== "object" || e === null) {
+          return done(Error("invalid payload for data event"));
+        }
 
-      if (!Array.isArray(e.things)) {
-        return done(Error("array property not set or not correct type"));
-      }
+        if (!Array.isArray(e.things)) {
+          return done(Error("array property not set or not correct type"));
+        }
 
-      if (e.things.length !== 3) {
-        return done(Error("invalid number of entries"));
-      }
+        if (e.things.length !== 3) {
+          return done(Error("invalid number of entries"));
+        }
 
-      return done();
+        return done();
+      }
     });
 
     reader.write(Buffer([0x01, 0x01, 0x01, 0x00]));

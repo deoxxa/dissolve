@@ -3,24 +3,27 @@ var Dissolve = require("../index");
 describe("tap", function() {
   it("should emit data 2 times then end", function(done) {
     var reader = Dissolve().uint8("x").tap(function() {
-      this.emit("data", this.vars.x);
+      this.push(this.vars.x);
 
       this.uint8("y").tap(function() {
-        this.emit("data", this.vars.y);
+        this.push(this.vars.y);
 
         this.tap(function() {
-          this.emit("done");
+          this.push(null);
         });
       });
     });
 
     var counter = 0;
 
-    reader.on("data", function() {
-      counter++;
+    reader.on("readable", function() {
+      var data;
+      while (data = reader.read()) {
+        counter++;
+      }
     });
 
-    reader.on("done", function() {
+    reader.on("end", function() {
       if (counter !== 2) {
         return done(Error("invalid counter value"));
       } else {
@@ -35,12 +38,14 @@ describe("tap", function() {
     var reader = Dissolve().tap("a", function() {
       this.uint8("x").tap("b", function() {
         this.uint8("y").tap(function() {
-          this.emit("data", this.vars);
+          this.push(this.vars);
         });
       });
     });
 
-    reader.on("data", function(e) {
+    reader.on("readable", function() {
+      var e = reader.read();
+
       if (typeof e !== "object" || e === null) {
         return done(Error("invalid payload for data event"));
       }
