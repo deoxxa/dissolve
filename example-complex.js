@@ -17,7 +17,7 @@ function Parser() {
         case 0xfe: break;
       }
     }).tap(function() {
-      this.emit("data", this.vars);
+      this.push(this.vars);
       this.vars = {};
     });
   });
@@ -44,8 +44,11 @@ Parser.prototype.mcstring16 = function string16(name) {
 
 var parser = new Parser();
 
-parser.on("data", function(e) {
-  console.log(e);
+parser.on("readable", function() {
+  var e;
+  while (e = parser.read()) {
+    console.log(e);
+  }
 });
 
 parser.write(new Buffer([0x00, 0x00, 0x00, 0x00, 0x01]));
