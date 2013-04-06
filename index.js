@@ -1,4 +1,4 @@
-var Steez = require("steez"),
+var stream = require("stream"),
     util = require("util");
 
 function copy(o) {
@@ -8,10 +8,16 @@ function copy(o) {
   }, {});
 }
 
-var Dissolve = module.exports = function Dissolve() {
+var Dissolve = module.exports = function Dissolve(options) {
   if (!(this instanceof Dissolve)) { return new Dissolve(); }
 
-  Steez.call(this);
+  if (!options) {
+    options = {};
+  }
+
+  options.objectMode = true;
+
+  stream.Transform.call(this, options);
 
   this.jobs = [];
   this.vars = Object.create(null);
@@ -19,12 +25,12 @@ var Dissolve = module.exports = function Dissolve() {
 
   this._buffer = new Buffer(0);
 };
-util.inherits(Dissolve, Steez);
+util.inherits(Dissolve, stream.Transform);
 
-Dissolve.prototype.write = function write(data) {
+Dissolve.prototype._transform = function _transform(input, encoding, done) {
   var offset = 0;
 
-  this._buffer = Buffer.concat([this._buffer, data]);
+  this._buffer = Buffer.concat([this._buffer, input]);
 
   while (this.jobs.length) {
     var job = this.jobs[0];
@@ -168,7 +174,7 @@ Dissolve.prototype.write = function write(data) {
     this.end();
   }
 
-  return !this.paused && this.writable;
+  return done();
 };
 
 [["float", 4], ["double", 8]].forEach(function(t) {
