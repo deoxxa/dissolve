@@ -7,7 +7,6 @@
     "test": "mocha -R spec"
   },
   "dependencies": {
-    "steez": "~0.4.2"
   },
   "devDependencies": {
     "mocha": "~1.8.1"
