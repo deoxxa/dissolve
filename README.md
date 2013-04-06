@@ -56,13 +56,16 @@ var parser = Dissolve().loop(function(end) {
       this.uint32be("x").uint32be("y");
     }
   }).tap(function() {
-    this.emit("data", this.vars);
+    this.push(this.vars);
     this.vars = {};
   });
 });
 
-parser.on("data", function(e) {
-  console.log(e);
+parser.on("readable", function() {
+  var e;
+  while (e = parser.read()) {
+    console.log(e);
+  }
 });
 
 parser.write(new Buffer([0x01, 0x00, 0x02, 0x00, 0x03])); // {id: 1, a: 2, b: 3}
