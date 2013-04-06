@@ -3,6 +3,9 @@
   "version": "0.2.1",
   "description": "Parse and consume binary streams with a neat DSL",
   "main": "index.js",
+  "engines": {
+    "node": "~0.10.0"
+  },
   "scripts": {
     "test": "mocha -R spec"
   },
