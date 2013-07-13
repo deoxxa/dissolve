@@ -171,7 +171,7 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
   this._buffer = this._buffer.slice(offset);
 
   if (this.jobs.length === 0) {
-    this.end();
+    this.push(null);
   }
 
   return done();
