@@ -74,10 +74,10 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
       this.jobs.splice(0);
       if (job.name) {
         this.jobs.push({type: "down", into: job.name});
-        job.fn.apply(this);
+        this.jobs.push({type: "tap", args: job.args, fn: job.fn});
         this.jobs.push({type: "up"});
       } else {
-        job.fn.apply(this);
+        job.fn.apply(this, job.args || []);
       }
       Array.prototype.splice.apply(this.jobs, [this.jobs.length, 0].concat(jobs));
 
@@ -97,20 +97,34 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
           this.vars[job.name] = [];
         }
 
-        this.jobs.push({type: "down", into: "__loop_temp"});
-        job.fn.apply(this, [job.finish]);
-        this.jobs.push({type: "up"});
+        // private scope so _job doesn't get redefined later
+        (function() {
+          var _job = job;
 
-        var _job = job;
-        this.jobs.push({type: "tap", fn: function() {
-          if (!_job.cancelled) {
-            this.vars[_job.name].push(this.vars.__loop_temp);
-          }
+          this.jobs.push({
+            type: "tap",
+            name: "__loop_temp",
+            args: [job.finish],
+            fn: job.fn,
+          });
 
-          delete this.vars.__loop_temp;
-        }});
+          this.jobs.push({
+            type: "tap",
+            fn: function() {
+              if (!_job.cancelled) {
+                this.vars[_job.name].push(this.vars.__loop_temp);
+              }
+
+              delete this.vars.__loop_temp;
+            },
+          });
+        }).call(this);
       } else {
-        job.fn.apply(this, [job.finish]);
+        this.jobs.push({
+          type: "tap",
+          args: [job.finish],
+          fn: job.fn,
+        });
       }
       Array.prototype.splice.apply(this.jobs, [this.jobs.length, 0].concat(jobs));
 
