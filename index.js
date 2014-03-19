@@ -1,12 +1,17 @@
 var BufferList = require("bl"),
     stream = require("readable-stream");
 
-function copy(o) {
-  return Object.keys(o).reduce(function(i, v) {
-    i[v] = o[v];
-    return i;
-  }, {});
-}
+var copy = function copy(o) {
+  var r = {};
+
+  for (var k in o) {
+    if (Object.hasOwnProperty.call(o, k)) {
+      r[k] = o[k];
+    }
+  }
+
+  return r;
+};
 
 var Dissolve = module.exports = function Dissolve(options) {
   if (!(this instanceof Dissolve)) { return new Dissolve(); }
