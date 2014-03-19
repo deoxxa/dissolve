@@ -32,6 +32,17 @@ var Dissolve = module.exports = function Dissolve(options) {
 };
 Dissolve.prototype = Object.create(stream.Transform.prototype, {constructor: {value: Dissolve}});
 
+Dissolve.prototype._job_down = function _job_down(job) {
+  var tmp = this.vars;
+  this.vars_list.push(tmp);
+  this.vars = tmp[job.into] = Object.create(tmp);
+};
+
+Dissolve.prototype._job_up = function _job_up() {
+  this.vars.__proto__ = null;
+  this.vars = this.vars_list.pop();
+};
+
 Dissolve.prototype._transform = function _transform(input, encoding, done) {
   var offset = 0;
 
@@ -43,9 +54,7 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
     if (job.type === "down") {
       this.jobs.shift();
 
-      var tmp = this.vars;
-      this.vars_list.push(tmp);
-      this.vars = tmp[job.into] = Object.create(tmp);
+      this._job_down(job);
 
       continue;
     }
@@ -53,8 +62,7 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
     if (job.type === "up") {
       this.jobs.shift();
 
-      this.vars.__proto__ = null;
-      this.vars = this.vars_list.pop();
+      this._job_up();
 
       continue;
     }
