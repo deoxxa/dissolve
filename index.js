@@ -1,5 +1,5 @@
 var BufferList = require("bl"),
-    stream = require("stream"),
+    stream = require("readable-stream"),
     util = require("util");
 
 function copy(o) {
