@@ -1,6 +1,5 @@
 var BufferList = require("bl"),
-    stream = require("readable-stream"),
-    util = require("util");
+    stream = require("readable-stream");
 
 function copy(o) {
   return Object.keys(o).reduce(function(i, v) {
@@ -26,7 +25,7 @@ var Dissolve = module.exports = function Dissolve(options) {
 
   this._buffer = new BufferList();
 };
-util.inherits(Dissolve, stream.Transform);
+Dissolve.prototype = Object.create(stream.Transform.prototype, {constructor: {value: Dissolve}});
 
 Dissolve.prototype._transform = function _transform(input, encoding, done) {
   var offset = 0;
