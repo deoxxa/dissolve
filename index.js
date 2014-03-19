@@ -1,4 +1,5 @@
-var stream = require("stream"),
+var BufferList = require("bl"),
+    stream = require("stream"),
     util = require("util");
 
 function copy(o) {
@@ -23,14 +24,14 @@ var Dissolve = module.exports = function Dissolve(options) {
   this.vars = Object.create(null);
   this.vars_list = [];
 
-  this._buffer = new Buffer(0);
+  this._buffer = new BufferList();
 };
 util.inherits(Dissolve, stream.Transform);
 
 Dissolve.prototype._transform = function _transform(input, encoding, done) {
   var offset = 0;
 
-  this._buffer = Buffer.concat([this._buffer, input]);
+  this._buffer.append(input);
 
   while (this.jobs.length) {
     var job = this.jobs[0];
@@ -168,7 +169,7 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
     throw new Error("uhhhhh");
   }
 
-  this._buffer = this._buffer.slice(offset);
+  this._buffer.consume(offset);
 
   if (this.jobs.length === 0) {
     this.push(null);
