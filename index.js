@@ -14,13 +14,15 @@ var copy = function copy(o) {
 };
 
 var Dissolve = module.exports = function Dissolve(options) {
-  if (!(this instanceof Dissolve)) { return new Dissolve(); }
+  if (!(this instanceof Dissolve)) { return new Dissolve(options); }
 
   if (!options) {
     options = {};
   }
 
-  options.objectMode = true;
+  if (!options.hasOwnProperty('objectMode')) {
+    options.objectMode = true;
+  }
 
   stream.Transform.call(this, options);
 
