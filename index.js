@@ -1,18 +1,6 @@
 var BufferList = require("bl"),
     stream = require("readable-stream");
 
-var copy = function copy(o) {
-  var r = {};
-
-  for (var k in o) {
-    if (Object.hasOwnProperty.call(o, k)) {
-      r[k] = o[k];
-    }
-  }
-
-  return r;
-};
-
 var Dissolve = module.exports = function Dissolve(options) {
   if (!(this instanceof Dissolve)) { return new Dissolve(); }
 
@@ -131,32 +119,34 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
       continue;
     }
 
+    var length;
     if (typeof job.length === "string") {
-      job = copy(job);
-      job.length = this.vars[job.length];
+      length = this.vars[job.length];
+    } else {
+      length = job.length;
     }
 
-    if (this._buffer.length - offset < job.length) {
+    if (this._buffer.length - offset < length) {
       break;
     }
 
     if (job.type === "buffer") {
-      this.vars[job.name] = new Buffer(job.length);
-      this._buffer.copy(this.vars[job.name], 0, offset, offset + job.length);
+      this.vars[job.name] = new Buffer(length);
+      this._buffer.copy(this.vars[job.name], 0, offset, offset + length);
 
       this.jobs.shift();
 
-      offset += job.length;
+      offset += length;
 
       continue;
     }
 
     if (job.type === "string") {
-      this.vars[job.name] = this._buffer.toString("utf8", offset, offset + job.length);
+      this.vars[job.name] = this._buffer.toString("utf8", offset, offset + length);
 
       this.jobs.shift();
 
-      offset += job.length;
+      offset += length;
 
       continue;
     }
@@ -187,7 +177,7 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
 
     this.jobs.shift();
 
-    offset += job.length;
+    offset += length;
   }
 
   this._buffer.consume(offset);
