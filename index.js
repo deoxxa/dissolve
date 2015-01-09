@@ -31,6 +31,90 @@ Dissolve.prototype._job_up = function _job_up() {
   this.vars = this.vars_list.pop();
 };
 
+Dissolve.prototype._exec_down = function _exec_down(job) {
+  this.jobs.shift();
+  this._job_down(job);
+};
+
+Dissolve.prototype._exec_up = function _exec_up(job) {
+  this.jobs.shift();
+  this._job_up();
+};
+
+Dissolve.prototype._exec_tap = function _exec_tap(job) {
+  this.jobs.shift();
+
+  var jobs = this.jobs;
+
+  this.jobs = [];
+
+  if (job.name) {
+    this.jobs.push({type: "down", into: job.name});
+    this.jobs.push({type: "tap", args: job.args, fn: job.fn});
+    this.jobs.push({type: "up"});
+  } else {
+    job.fn.apply(this, job.args || []);
+  }
+
+  Array.prototype.push.apply(this.jobs, jobs);
+};
+
+Dissolve.prototype._exec_loop = function _exec_loop(job) {
+  if (job.finished) {
+    this.jobs.shift();
+    return;
+  }
+
+  var jobs = this.jobs;
+  this.jobs = [];
+
+  if (job.name) {
+    if (typeof this.vars[job.name] === "undefined") {
+      this.vars[job.name] = [];
+    }
+
+    // private scope so _job doesn't get redefined later
+    (function() {
+      var _job = job;
+
+      this.jobs.push({
+        type: "tap",
+        name: "__loop_temp",
+        args: [job.finish],
+        fn: job.fn,
+      });
+
+      this.jobs.push({
+        type: "tap",
+        fn: function() {
+          if (!_job.cancelled) {
+            this.vars[_job.name].push(this.vars.__loop_temp);
+          }
+
+          delete this.vars.__loop_temp;
+        },
+      });
+    }).call(this);
+  } else {
+    this.jobs.push({
+      type: "tap",
+      args: [job.finish],
+      fn: job.fn,
+    });
+  }
+  Array.prototype.push.apply(this.jobs, jobs);
+};
+
+Dissolve.prototype._exec_string = function _exec_string(job, offset, length) {
+  this.vars[job.name] = this._buffer.toString("utf8", offset, offset + length);
+  this.jobs.shift();
+};
+
+Dissolve.prototype._exec_buffer = function _exec_buffer(job, offset, length) {
+  this.vars[job.name] = this._buffer.slice(offset, offset+length);
+  this.jobs.shift();
+};
+
 Dissolve.prototype._transform = function _transform(input, encoding, done) {
   var offset = 0;
 
@@ -40,84 +124,22 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
     var job = this.jobs[0];
 
     if (job.type === "down") {
-      this.jobs.shift();
-
-      this._job_down(job);
-
+      this._exec_down(job);
       continue;
     }
 
     if (job.type === "up") {
-      this.jobs.shift();
-
-      this._job_up();
-
+      this._exec_up(job);
       continue;
     }
 
     if (job.type === "tap") {
-      this.jobs.shift();
-
-      var jobs = this.jobs;
-      this.jobs = [];
-
-      if (job.name) {
-        this.jobs.push({type: "down", into: job.name});
-        this.jobs.push({type: "tap", args: job.args, fn: job.fn});
-        this.jobs.push({type: "up"});
-      } else {
-        job.fn.apply(this, job.args || []);
-      }
-      Array.prototype.push.apply(this.jobs, jobs);
-
+      this._exec_tap(job);
       continue;
     }
 
     if (job.type === "loop") {
-      if (job.finished) {
-        this.jobs.shift();
-        continue;
-      }
-
-      var jobs = this.jobs;
-      this.jobs = [];
-
-      if (job.name) {
-        if (typeof this.vars[job.name] === "undefined") {
-          this.vars[job.name] = [];
-        }
-
-        // private scope so _job doesn't get redefined later
-        (function() {
-          var _job = job;
-
-          this.jobs.push({
-            type: "tap",
-            name: "__loop_temp",
-            args: [job.finish],
-            fn: job.fn,
-          });
-
-          this.jobs.push({
-            type: "tap",
-            fn: function() {
-              if (!_job.cancelled) {
-                this.vars[_job.name].push(this.vars.__loop_temp);
-              }
-
-              delete this.vars.__loop_temp;
-            },
-          });
-        }).call(this);
-      } else {
-        this.jobs.push({
-          type: "tap",
-          args: [job.finish],
-          fn: job.fn,
-        });
-      }
-      Array.prototype.push.apply(this.jobs, jobs);
-
+      this._exec_loop(job);
       continue;
     }
 
@@ -133,22 +155,14 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
     }
 
     if (job.type === "buffer") {
-      this.vars[job.name] = this._buffer.slice(offset, offset+length);
-
-      this.jobs.shift();
-
+      this._exec_buffer(job, offset, length);
       offset += length;
-
       continue;
     }
 
     if (job.type === "string") {
-      this.vars[job.name] = this._buffer.toString("utf8", offset, offset + length);
-
-      this.jobs.shift();
-
+      this._exec_string(job, offset, length);
       offset += length;
-
       continue;
     }
 
