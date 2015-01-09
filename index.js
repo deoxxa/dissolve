@@ -58,8 +58,9 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
     if (job.type === "tap") {
       this.jobs.shift();
 
-      var jobs = this.jobs.slice();
-      this.jobs.splice(0);
+      var jobs = this.jobs;
+      this.jobs = [];
+
       if (job.name) {
         this.jobs.push({type: "down", into: job.name});
         this.jobs.push({type: "tap", args: job.args, fn: job.fn});
@@ -67,7 +68,7 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
       } else {
         job.fn.apply(this, job.args || []);
       }
-      Array.prototype.splice.apply(this.jobs, [this.jobs.length, 0].concat(jobs));
+      Array.prototype.push.apply(this.jobs, jobs);
 
       continue;
     }
@@ -78,8 +79,9 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
         continue;
       }
 
-      var jobs = this.jobs.slice();
-      this.jobs.splice(0);
+      var jobs = this.jobs;
+      this.jobs = [];
+
       if (job.name) {
         if (typeof this.vars[job.name] === "undefined") {
           this.vars[job.name] = [];
@@ -114,7 +116,7 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
           fn: job.fn,
         });
       }
-      Array.prototype.splice.apply(this.jobs, [this.jobs.length, 0].concat(jobs));
+      Array.prototype.push.apply(this.jobs, jobs);
 
       continue;
     }
