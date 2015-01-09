@@ -133,8 +133,7 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
     }
 
     if (job.type === "buffer") {
-      this.vars[job.name] = new Buffer(length);
-      this._buffer.copy(this.vars[job.name], 0, offset, offset + length);
+      this.vars[job.name] = this._buffer.slice(offset, offset+length);
 
       this.jobs.shift();
 
