@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "bl": "^0.9.4",
-    "readable-stream": "^1.0.26"
+    "readable-stream": "^1.0.33"
   },
   "devDependencies": {
     "mocha": "^2.1.0"
