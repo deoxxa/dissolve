@@ -10,11 +10,11 @@
     "test": "mocha -R spec"
   },
   "dependencies": {
-    "bl": "^0.7.0",
-    "readable-stream": "^1.0.26"
+    "bl": "^0.9.4",
+    "readable-stream": "^1.0.33"
   },
   "devDependencies": {
-    "mocha": "~1.8.1"
+    "mocha": "^2.1.0"
   },
   "repository": {
     "type": "git",
