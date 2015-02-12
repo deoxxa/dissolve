@@ -14,7 +14,7 @@
     "readable-stream": "^1.0.26"
   },
   "devDependencies": {
-    "mocha": "~1.8.1"
+    "mocha": "^2.1.0"
   },
   "repository": {
     "type": "git",
