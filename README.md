@@ -133,6 +133,7 @@ previously-set `this.vars` entry. If it's a number, it will be used as-is.
 
 * `buffer(name, length)` - binary slice
 * `string(name, length)` - utf8 string slice
+* `skip(length)` - skip `length` bytes
 
 Numeric Methods
 ---------------
