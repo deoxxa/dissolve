@@ -168,6 +168,14 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
       continue;
     }
 
+    if (job.type === "skip") {
+      this.jobs.shift();
+
+      offset += job.length;
+
+      continue;
+    }
+
     switch (job.type) {
       case "int8le":  { this.vars[job.name] = this._buffer.readInt8(offset);  break; }
       case "uint8le": { this.vars[job.name] = this._buffer.readUInt8(offset); break; }
@@ -275,6 +283,17 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
     this.jobs.push({
       type: e,
       name: name,
+      length: length,
+    });
+
+    return this;
+  };
+});
+
+["skip"].forEach(function(e) {
+  Dissolve.prototype[e] = function(length) {
+    this.jobs.push({
+      type: e,
       length: length,
     });
 
