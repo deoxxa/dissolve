@@ -15,8 +15,6 @@ describe("tap", function() {
       });
     });
 
-    reader.write(Buffer([0x01, 0x01]));
-
     var counter = 0;
 
     reader.on("readable", function() {
@@ -28,11 +26,13 @@ describe("tap", function() {
 
     reader.on("end", function() {
       if (counter !== 2) {
-        return done(Error("invalid counter value, expected 2, got" + JSON.stringify(counter)));
+        return done(Error("invalid counter value"));
       } else {
         return done();
       }
     });
+
+    reader.write(Buffer([0x01, 0x01]));
   });
 
   it("should populate child objects correctly", function(done) {
@@ -44,15 +44,20 @@ describe("tap", function() {
       });
     });
 
-    reader.write(Buffer([0x01, 0x01]));
-
-    reader.on("readable", function() {
+    reader.once("readable", function() {
       var e = reader.read();
 
-      assert.deepPropertyVal(e, "a.x", 1);
-      assert.deepPropertyVal(e, "a.b.y", 1);
+      assert.isObject(e);
+      assert.isObject(e.a);
+      assert.isObject(e.a.b);
+      assert.strictEqual(e.a.x, 1);
+      assert.strictEqual(e.a.b.y, 1);
 
-      return done();
+      assert.isNull(reader.read());
+
+      done();
     });
+
+    reader.write(Buffer([0x01, 0x01]));
   });
 });
