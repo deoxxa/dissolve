@@ -1,3 +1,4 @@
+var assert = require("chai").assert;
 var Dissolve = require("../index");
 
 describe("tap", function() {
@@ -48,17 +49,8 @@ describe("tap", function() {
     reader.on("readable", function() {
       var e = reader.read();
 
-      if (typeof e !== "object" || e === null) {
-        return done(Error("invalid payload for data event"));
-      }
-
-      if (typeof e.a !== "object" || e.a === null || typeof e.a.b !== "object" || e.a.b === null) {
-        return done(Error("child object(s) not set correctly"));
-      }
-
-      if (typeof e.a.x !== "number" || typeof e.a.b.y !== "number") {
-        return done(Error("child object(s) not set correctly"));
-      }
+      assert.deepPropertyVal(e, "a.x", 1);
+      assert.deepPropertyVal(e, "a.b.y", 1);
 
       return done();
     });
