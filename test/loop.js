@@ -12,8 +12,6 @@ describe("loop", function() {
       });
     });
 
-    reader.write(Buffer([0x01, 0x01, 0x01, 0x00, 0x02]));
-
     var counter = 0;
 
     reader.on("readable", function() {
@@ -30,6 +28,8 @@ describe("loop", function() {
         return done();
       }
     });
+
+    reader.write(Buffer([0x01, 0x01, 0x01, 0x00, 0x02]));
   });
 
   it("should populate an array correctly", function(done) {
@@ -42,8 +42,6 @@ describe("loop", function() {
     }).tap(function() {
       this.push(this.vars);
     });
-
-    reader.write(Buffer([0x01, 0x01, 0x01, 0x00]));
 
     reader.on("readable", function() {
       var e;
@@ -63,6 +61,8 @@ describe("loop", function() {
         return done();
       }
     });
+
+    reader.write(Buffer([0x01, 0x01, 0x01, 0x00]));
   });
 
   it("should work with nested, cancelled loop operations", function(done) {
@@ -88,14 +88,6 @@ describe("loop", function() {
         this.vars = Object.create(null);
       });
     });
-
-    reader.write(new Buffer([
-      0x02,
-        0x02,
-          0x01, 0x02,
-        0x02,
-          0x03, 0x04,
-    ]));
 
     reader.on("readable", function() {
       var e;
@@ -147,5 +139,13 @@ describe("loop", function() {
         return done();
       }
     });
+
+    reader.write(new Buffer([
+      0x02,
+        0x02,
+          0x01, 0x02,
+        0x02,
+          0x03, 0x04,
+    ]));
   });
 });
