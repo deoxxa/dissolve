@@ -14,6 +14,8 @@ describe("tap", function() {
       });
     });
 
+    reader.write(Buffer([0x01, 0x01]));
+
     var counter = 0;
 
     reader.on("readable", function() {
@@ -25,13 +27,11 @@ describe("tap", function() {
 
     reader.on("end", function() {
       if (counter !== 2) {
-        return done(Error("invalid counter value"));
+        return done(Error("invalid counter value, expected 2, got" + JSON.stringify(counter)));
       } else {
         return done();
       }
     });
-
-    reader.write(Buffer([0x01, 0x01]));
   });
 
   it("should populate child objects correctly", function(done) {
@@ -42,6 +42,8 @@ describe("tap", function() {
         });
       });
     });
+
+    reader.write(Buffer([0x01, 0x01]));
 
     reader.on("readable", function() {
       var e = reader.read();
@@ -60,7 +62,5 @@ describe("tap", function() {
 
       return done();
     });
-
-    reader.write(Buffer([0x01, 0x01]));
   });
 });
