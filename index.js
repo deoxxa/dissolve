@@ -170,9 +170,7 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
 
     if (job.type === "skip") {
       this.jobs.shift();
-
-      offset += job.length;
-
+      offset += length;
       continue;
     }
 
