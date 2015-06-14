@@ -71,7 +71,7 @@ Dissolve.prototype._exec_loop = function _exec_loop(job) {
   this.jobs = [];
 
   if (job.name) {
-    if (typeof this.vars[job.name] === "undefined") {
+    if (this.vars[job.name] === undefined) {
       this.vars[job.name] = [];
     }
 
