@@ -75,28 +75,23 @@ Dissolve.prototype._exec_loop = function _exec_loop(job) {
       this.vars[job.name] = [];
     }
 
-    // private scope so _job doesn't get redefined later
-    (function() {
-      var _job = job;
+    this.jobs.push({
+      type: "tap",
+      name: "__loop_temp",
+      args: [job.finish],
+      fn: job.fn,
+    });
 
-      this.jobs.push({
-        type: "tap",
-        name: "__loop_temp",
-        args: [job.finish],
-        fn: job.fn,
-      });
+    this.jobs.push({
+      type: "tap",
+      fn: function() {
+        if (!job.cancelled) {
+          this.vars[job.name].push(this.vars.__loop_temp);
+        }
 
-      this.jobs.push({
-        type: "tap",
-        fn: function() {
-          if (!_job.cancelled) {
-            this.vars[_job.name].push(this.vars.__loop_temp);
-          }
-
-          delete this.vars.__loop_temp;
-        },
-      });
-    }).call(this);
+        delete this.vars.__loop_temp;
+      },
+    });
   } else {
     this.jobs.push({
       type: "tap",
