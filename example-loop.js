@@ -2,28 +2,31 @@
 
 var Dissolve = require("./index");
 
-var parser = Dissolve().tap(function() {
-  var data_i = 0;
+var parser = Dissolve()
+parser.parser = function*() {
+  var data_count;
+  var data, elements, i, j;
 
-  this.uint8("data_count").loop("data", function(end) {
-    if (data_i++ === this.vars.data_count) {
-      return end(true);
-    }
+  while (true) {
+    data = [];
+    data_count = yield this.uint8();
 
-    var elements_i = 0;
+    for (i = 0; i < data_count; i++) {
+      elements = []
+      element_count = yield this.uint8();
 
-    this.uint8("element_count").loop("elements", function(end) {
-      if (elements_i++ === this.vars.element_count) {
-        return end(true);
+      for (j = 0; j < element_count; j++) {
+        elements.push({ element: yield this.uint8() });
       }
 
-      this.uint8("element");
+      data.push({ elements: elements });
+    }
+
+    this.push({
+      data: data
     });
-  }).tap(function() {
-    this.push(this.vars);
-    this.vars = Object.create(null);
-  });
-});
+  }
+};
 
 parser.on("readable", function() {
   var e;

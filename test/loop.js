@@ -1,16 +1,14 @@
 var Dissolve = require("../index");
 
-describe("loop", function() {
-  it("should emit data 3 times then end", function(done) {
-    var reader = Dissolve().loop(function(end) {
-      this.uint8("x").tap(function() {
-        if (this.vars.x === 0) {
-          return end(true);
-        } else {
-          this.push(this.vars);
-        }
-      });
-    });
+describe("Dissolve looping", function() {
+  it("should support simple looping constructs", function(done) {
+    var reader = Dissolve();
+    reader.parser = function*() {
+      var x;
+      while ((x = yield this.uint8()) !== 0) {
+        this.push({ x: x });
+      }
+    };
 
     var counter = 0;
 
@@ -32,62 +30,27 @@ describe("loop", function() {
     reader.write(Buffer([0x01, 0x01, 0x01, 0x00, 0x02]));
   });
 
-  it("should populate an array correctly", function(done) {
-    var reader = Dissolve().loop("things", function(end) {
-      this.uint8("x").tap(function() {
-        if (this.vars.x === 0) {
-          return end(true);
-        }
-      });
-    }).tap(function() {
-      this.push(this.vars);
-    });
+  it("should work with complex, nested loop operations", function(done) {
+    var reader = Dissolve();
+    reader.parser = function*() {
+      var data = [];
+      var data_count = yield this.uint8();
 
-    reader.on("readable", function() {
-      var e;
-      while (e = reader.read()) {
-        if (typeof e !== "object" || e === null) {
-          return done(Error("invalid payload for data event"));
+      for (var i = 0; i < data_count; i++) {
+        var elements = []
+        var element_count = yield this.uint8();
+
+        for (var j = 0; j < element_count; j++) {
+          elements.push({ element: yield this.uint8() });
         }
 
-        if (!Array.isArray(e.things)) {
-          return done(Error("array property not set or not correct type"));
-        }
-
-        if (e.things.length !== 3) {
-          return done(Error("invalid number of entries"));
-        }
-
-        return done();
+        data.push({ elements: elements });
       }
-    });
 
-    reader.write(Buffer([0x01, 0x01, 0x01, 0x00]));
-  });
-
-  it("should work with nested, cancelled loop operations", function(done) {
-    var reader = Dissolve().tap(function() {
-      var data_i = 0;
-
-      this.uint8("data_count").loop("data", function(end) {
-        if (data_i++ === this.vars.data_count) {
-          return end(true);
-        }
-
-        var elements_i = 0;
-
-        this.uint8("element_count").loop("elements", function(end) {
-          if (elements_i++ === this.vars.element_count) {
-            return end(true);
-          }
-
-          this.uint8("element");
-        });
-      }).tap(function() {
-        this.push(this.vars);
-        this.vars = Object.create(null);
+      this.push({
+        data: data
       });
-    });
+    };
 
     reader.on("readable", function() {
       var e;

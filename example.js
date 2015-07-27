@@ -2,22 +2,38 @@
 
 var Dissolve = require("./index");
 
-var parser = Dissolve().loop(function(end) {
-  this.uint8("id").tap("payload", function() {
-    this.tap("asdf", function() {
-      if (this.vars.id === 0x01) {
-        this.uint16be("a").uint16be("b");
-      } else if (this.vars.id === 0x02) {
-        this.uint32be("x").uint32be("y");
-      } else if (this.vars.id === 0x03) {
-        this.floatbe("l").doublebe("m");
+var parser = new Dissolve();
+parser.parser = function*() {
+  var id, payload;
+
+  while (true) {
+    id = yield this.uint8();
+
+    if (id === 0x01) {
+      payload = {
+        "a": yield this.uint16be(),
+        "b": yield this.uint16be()
+      };
+    } else if (id === 0x02) {
+      payload = {
+        "x": yield this.uint32be(),
+        "y": yield this.uint32be()
+      };
+    } else if (id === 0x03) {
+      payload = {
+        "l": yield this.floatbe(),
+        "m": yield this.doublebe()
+      };
+    }
+
+    this.push({
+      id: id,
+      payload: {
+        asdf: payload
       }
     });
-  }).tap(function() {
-    this.push(this.vars);
-    this.vars = Object.create(null);
-  });
-});
+  }
+};
 
 parser.on("readable", function() {
   var e;
