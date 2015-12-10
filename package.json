@@ -10,7 +10,7 @@
     "test": "mocha -R spec"
   },
   "dependencies": {
-    "bl": "^0.9.4",
+    "bl": "^1.0.0",
     "readable-stream": "^2.0.0"
   },
   "devDependencies": {
