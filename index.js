@@ -14,6 +14,7 @@ var Dissolve = module.exports = function Dissolve(options) {
 
   stream.Transform.call(this, options);
 
+  this.offset = 0;
   this.jobs = [];
   this.vars = Object.create(null);
   this.vars_list = [];
@@ -122,6 +123,11 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
 
   this._buffer.append(input);
 
+  function moveOffset(value) {
+    offset += value;
+    this.offset += value;
+  }
+
   while (this.jobs.length) {
     var job = this.jobs[0];
 
@@ -158,19 +164,19 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
 
     if (job.type === "buffer") {
       this._exec_buffer(job, offset, length);
-      offset += length;
+      moveOffset(length);
       continue;
     }
 
     if (job.type === "string") {
       this._exec_string(job, offset, length);
-      offset += length;
+      moveOffset(length);
       continue;
     }
 
     if (job.type === "skip") {
       this.jobs.shift();
-      offset += length;
+      moveOffset(length);
       continue;
     }
 
@@ -200,7 +206,7 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
 
     this.jobs.shift();
 
-    offset += length;
+    moveOffset(length);
   }
 
   this._buffer.consume(offset);
