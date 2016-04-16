@@ -119,13 +119,14 @@ Dissolve.prototype._exec_buffer = function _exec_buffer(job, offset, length) {
 };
 
 Dissolve.prototype._transform = function _transform(input, encoding, done) {
+  var that = this;
   var offset = 0;
 
   this._buffer.append(input);
 
   function moveOffset(value) {
     offset += value;
-    this.offset += value;
+    that.offset += value;
   }
 
   while (this.jobs.length) {
