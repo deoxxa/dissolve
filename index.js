@@ -19,6 +19,7 @@ var Dissolve = module.exports = function Dissolve(options) {
   this.vars_list = [];
 
   this._buffer = new BufferList();
+  this._buffers_stack = [];
 };
 Dissolve.prototype = Object.create(stream.Transform.prototype, {constructor: {value: Dissolve}});
 
@@ -107,6 +108,57 @@ Dissolve.prototype._exec_loop = function _exec_loop(job) {
   Array.prototype.push.apply(this.jobs, jobs);
 };
 
+Dissolve.prototype._exec_parse = function _exec_parse(job, curr_offset) {
+  this.jobs.shift();
+
+  var jobs = this.jobs;
+  this.jobs = [];
+
+  this.jobs.push({type: "store", offset: curr_offset, new_buffer: job.buffer});
+
+  if (job.name) {
+    this.jobs.push({type: "down", into: job.name});
+    this.jobs.push({type: "tap", args: job.args || [], fn: job.fn});
+    this.jobs.push({type: "up"});
+  } else {
+    job.fn.apply(this, job.args || []);
+  }
+
+  this.jobs.push({type: "retrieve"});
+
+  Array.prototype.push.apply(this.jobs, jobs);
+};
+
+Dissolve.prototype._exec_store_buffer = function (job, offset) {
+  this.jobs.shift();
+
+  var tmp = this._buffer;
+  this._buffers_stack.push({
+    buffer: this._buffer,
+    offset: offset
+  });
+  this._buffer = job.new_buffer;
+
+  return 0;
+}
+
+Dissolve.prototype._exec_pop_buffer = function (job, offset) {
+
+  this.jobs.shift();
+
+  // check for buffer overrun
+  if (offset < this._buffer.length)
+      throw new Error("Static buffer parsing - not all data consumed");
+
+  delete(this._buffer);
+
+  //({this._buffer, offset} = this._buffers_stack.pop());
+  var obj = this._buffers_stack.pop();
+  this._buffer = obj.buffer;
+
+  return obj.offset;
+}
+
 Dissolve.prototype._exec_string = function _exec_string(job, offset, length) {
   this.vars[job.name] = this._buffer.toString("utf8", offset, offset + length);
   this.jobs.shift();
@@ -142,6 +194,21 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
 
     if (job.type === "loop") {
       this._exec_loop(job);
+      continue;
+    }
+
+    if (job.type === "store") {
+      offset = this._exec_store_buffer(job, offset);
+      continue;
+    }
+
+    if (job.type === "retrieve") {
+      offset = this._exec_pop_buffer(job, offset);
+      continue;
+    }
+
+    if (job.type === "parse") {
+      this._exec_parse(job);
       continue;
     }
 
@@ -202,6 +269,10 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
 
     offset += length;
   }
+
+  //parsing static buffer of exact length should never reach consume (after job retrieval loop)
+  if (this._buffer instanceof Buffer)
+      throw new Error("Static buffer parsing underrun, processing procedure went on to parse upper level buffer");
 
   this._buffer.consume(offset);
 
@@ -298,3 +369,19 @@ Dissolve.prototype._transform = function _transform(input, encoding, done) {
     return this;
   };
 });
+
+Dissolve.prototype["parse"] = function(buffer, name, fn) {
+  if (typeof name === "function") {
+    fn = name;
+    name = null;
+  }
+
+  this.jobs.push({
+    type: "parse",
+    name: name,
+    fn: fn,
+    buffer: buffer
+  });
+
+  return this;
+};
