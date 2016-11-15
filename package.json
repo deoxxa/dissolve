@@ -4,13 +4,13 @@
   "description": "Parse and consume binary streams with a neat DSL",
   "main": "index.js",
   "engines": {
-    "node": "~0.10.0"
+    "node": ">=0.10.0 <=5"
   },
   "scripts": {
     "test": "mocha -R spec"
   },
   "dependencies": {
-    "bl": "^0.9.4",
+    "bl": "^1.0.0",
     "readable-stream": "^2.0.0"
   },
   "devDependencies": {
