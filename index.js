@@ -114,6 +114,8 @@ Dissolve.prototype._exec_parse = function _exec_parse(job, curr_offset) {
   var jobs = this.jobs;
   this.jobs = [];
 
+  if (typeof job.buffer == "string") job.buffer = this.vars[job.buffer];
+
   this.jobs.push({type: "store", offset: curr_offset, new_buffer: job.buffer});
 
   if (job.name) {
@@ -132,7 +134,8 @@ Dissolve.prototype._exec_parse = function _exec_parse(job, curr_offset) {
 Dissolve.prototype._exec_store_buffer = function (job, offset) {
   this.jobs.shift();
 
-  var tmp = this._buffer;
+  if (!Buffer.isBuffer(job.new_buffer)) throw new Error('Buffer expected for parse()');
+
   this._buffers_stack.push({
     buffer: this._buffer,
     offset: offset

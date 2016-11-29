@@ -16,12 +16,10 @@ function Parser() {
       .uint16be('packet_length')
       .loop(function (endPacket_cb) {
         this.buffer('packet_data', 'packet_length').tap(function () {
-          var packet = this.vars.packet_data;
 
           this.deleteVar('packet_length');
-          this.deleteVar('packet_data');
 
-          this.parse(packet, function () {
+          this.parse('packet_data', function () {
             this.loop(function (lastSegment_cb) {
               this.uint8('segment_type').tap(function () {
                 var segment_type;
@@ -58,6 +56,7 @@ function Parser() {
             });
           });
         }).tap(function packet_end() {
+          this.deleteVar('packet_data');
           endPacket_cb();
         });
       })

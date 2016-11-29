@@ -139,7 +139,7 @@ previously-set `this.vars` entry. If it's a number, it will be used as-is.
 Static Buffer Parsing Methods
 ----------------------
 
-* `parse(buffer, name, callback)` - tap into and parse binary slice (e.g. from `buffer()`). Just like in `tap()`, the optional `name` parameter makes parser put variables into a child object named after `name`.
+* `parse(buffer, name, callback)` - tap into and parse binary slice (e.g. from `buffer()`). Just like in `tap()`, the optional `name` parameter makes parser put variables into a child object named after `name`. If `buffer` is a string, it is assumed that it is a name of buffer variable in `this.vars`.
 * `rest(name, skip_end)` - when parsing a binary slice with `parse()` - cut out remaining part and store into variable. Useful when current parse pointer position or remaining length is not easy to calculate). Optionally - throw away `skip_end` bytes at the end.
 
 Numeric Methods
