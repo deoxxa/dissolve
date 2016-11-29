@@ -119,6 +119,25 @@ the examples will make that explanation a lot clearer.
 
 The same semantics for job ordering and "scoping" apply as for `tap`.
 
+Parse
+-----
+
+`parse(buffer, name, callback)`
+
+Use this static buffer and parse it (e.g. a binary slice cut by the `buffer` method).
+Sets aside currently parsed stream or static buffer (puts onto stack).
+
+`callback` is expected to consume precisely the entire length of static buffer,
+using all available parsing methods (including `parse` itself).
+If not all data is consumed, or an attempt is made to consume more
+than is available, errors are thrown.
+
+Just like in `tap`, the optional `name` parameter makes parser put variables
+into a child object named after `name`.
+
+If `buffer` is a string, it is assumed that it is a name of buffer variable in `this.vars`.
+
+
 Basic Parsing Methods
 ---------------------
 
@@ -139,8 +158,10 @@ previously-set `this.vars` entry. If it's a number, it will be used as-is.
 Static Buffer Parsing Methods
 ----------------------
 
-* `parse(buffer, name, callback)` - tap into and parse binary slice (e.g. from `buffer()`). Just like in `tap()`, the optional `name` parameter makes parser put variables into a child object named after `name`. If `buffer` is a string, it is assumed that it is a name of buffer variable in `this.vars`.
-* `rest(name, skip_end)` - when parsing a binary slice with `parse()` - cut out remaining part and store into variable. Useful when current parse pointer position or remaining length is not easy to calculate). Optionally - throw away `skip_end` bytes at the end.
+* `rest(name, skip_end)` - when parsing a binary slice with `parse` - cut out remaining part
+and store into variable. Useful when current parse pointer position or remaining length is
+not easy to calculate. Optionally - leave `skip_end` bytes at the end, to be parsed by other
+methods later.
 
 Numeric Methods
 ---------------
