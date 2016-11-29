@@ -41,7 +41,8 @@ Usage
 
 Also see [example.js](https://github.com/deoxxa/dissolve/blob/master/example.js),
 [example-complex.js](https://github.com/deoxxa/dissolve/blob/master/example-complex.js)
-and [example-loop.js](https://github.com/deoxxa/dissolve/blob/master/example-loop.js).
+[example-loop.js](https://github.com/deoxxa/dissolve/blob/master/example-loop.js)
+and [example-framing.js](https://github.com/deoxxa/dissolve/blob/master/example-framing.js).
 
 ```javascript
 #!/usr/bin/env node
@@ -134,6 +135,12 @@ previously-set `this.vars` entry. If it's a number, it will be used as-is.
 * `buffer(name, length)` - binary slice
 * `string(name, length)` - utf8 string slice
 * `skip(length)` - skip `length` bytes
+
+Static Buffer Parsing Methods
+----------------------
+
+* `parse(buffer, name, callback)` - tap into and parse binary slice (e.g. from `buffer()`). Just like in `tap()`, the optional `name` parameter makes parser put variables into a child object named after `name`.
+* `rest(name, skip_end)` - when parsing a binary slice with `parse()` - cut out remaining part and store into variable. Useful when current parse pointer position or remaining length is not easy to calculate). Optionally - throw away `skip_end` bytes at the end.
 
 Numeric Methods
 ---------------
