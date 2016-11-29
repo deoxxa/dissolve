@@ -138,12 +138,12 @@ Dissolve.prototype._exec_store_buffer = function (job, offset) {
 
   this._buffers_stack.push({
     buffer: this._buffer,
-    offset: offset
+    offset: offset,
   });
   this._buffer = job.new_buffer;
 
   return 0;
-}
+};
 
 Dissolve.prototype._exec_pop_buffer = function (job, offset) {
 
@@ -160,7 +160,7 @@ Dissolve.prototype._exec_pop_buffer = function (job, offset) {
   this._buffer = obj.buffer;
 
   return obj.offset;
-}
+};
 
 Dissolve.prototype._exec_rest_buffer = function(job, offset) {
   this.jobs.shift();
@@ -171,7 +171,7 @@ Dissolve.prototype._exec_rest_buffer = function(job, offset) {
     throw new Error("Rest of a non-static buffer requested");
 
   return this._buffer.length - job.skip_end;
-}
+};
 
 Dissolve.prototype._exec_string = function _exec_string(job, offset, length) {
   this.vars[job.name] = this._buffer.toString("utf8", offset, offset + length);
@@ -399,7 +399,7 @@ Dissolve.prototype["parse"] = function(buffer, name, fn) {
     type: "parse",
     name: name,
     fn: fn,
-    buffer: buffer
+    buffer: buffer,
   });
 
   return this;
@@ -412,8 +412,8 @@ Dissolve.prototype["rest"] = function(name, skip_end) {
   this.jobs.push({
     type: "rest",
     name: name,
-    skip_end: skip_end
+    skip_end: skip_end,
   });
 
   return this;
-}
+};
