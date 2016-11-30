@@ -1,6 +1,6 @@
 {
   "name": "dissolve",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Parse and consume binary streams with a neat DSL",
   "main": "index.js",
   "engines": {
@@ -32,5 +32,12 @@
     "emit"
   ],
   "author": "Conrad Pankoff <deoxxa@fknsrs.biz> (http://www.fknsrs.biz/)",
+  "contributors": [
+    {
+      "name": "Artem Pylypchuk",
+      "email": "articicejuice@gmail.com",
+      "url": "https://github.com/articice/"
+    }
+  ],
   "license": "BSD"
 }

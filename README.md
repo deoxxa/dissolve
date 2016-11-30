@@ -41,7 +41,8 @@ Usage
 
 Also see [example.js](https://github.com/deoxxa/dissolve/blob/master/example.js),
 [example-complex.js](https://github.com/deoxxa/dissolve/blob/master/example-complex.js)
-and [example-loop.js](https://github.com/deoxxa/dissolve/blob/master/example-loop.js).
+[example-loop.js](https://github.com/deoxxa/dissolve/blob/master/example-loop.js)
+and [example-framing.js](https://github.com/deoxxa/dissolve/blob/master/example-framing.js).
 
 ```javascript
 #!/usr/bin/env node
@@ -118,6 +119,25 @@ the examples will make that explanation a lot clearer.
 
 The same semantics for job ordering and "scoping" apply as for `tap`.
 
+Parse
+-----
+
+`parse(buffer, name, callback)`
+
+Use this static buffer and parse it (e.g. a binary slice cut by the `buffer` method).
+Sets aside currently parsed stream or static buffer (puts onto stack).
+
+`callback` is expected to consume precisely the entire length of static buffer,
+using all available parsing methods (including `parse` itself).
+If not all data is consumed, or an attempt is made to consume more
+than is available, errors are thrown.
+
+Just like in `tap`, the optional `name` parameter makes parser put variables
+into a child object named after `name`.
+
+If `buffer` is a string, it is assumed that it is a name of buffer variable in `this.vars`.
+
+
 Basic Parsing Methods
 ---------------------
 
@@ -134,6 +154,14 @@ previously-set `this.vars` entry. If it's a number, it will be used as-is.
 * `buffer(name, length)` - binary slice
 * `string(name, length)` - utf8 string slice
 * `skip(length)` - skip `length` bytes
+
+Static Buffer Parsing Methods
+----------------------
+
+* `rest(name, skip_end)` - when parsing a binary slice with `parse` - cut out remaining part
+and store into variable. Useful when current parse pointer position or remaining length is
+not easy to calculate. Optionally - leave `skip_end` bytes at the end, to be parsed by other
+methods later.
 
 Numeric Methods
 ---------------
